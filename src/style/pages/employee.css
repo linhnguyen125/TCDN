@@ -1,0 +1,147 @@
+.content-header {
+    flex-shrink: 0;
+}
+
+.w-h-100 {
+    width: 100%;
+    height: 100%;
+}
+
+.content-header .content-header-top {
+    display: flex;
+    justify-content: space-between;
+    padding: 24px 0px 0px 0px;
+}
+
+.content-header .btn-group {
+    display: flex;
+    align-items: center;
+}
+
+.content-header .m-btn {
+    margin-right: 12px;
+}
+
+.content-header .content-header-bottom {
+    display: flex;
+    align-items: center;
+}
+
+.content-header .content-header-bottom .m-icon {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.content-header .content-header-bottom a {
+    text-decoration: none;
+    line-height: 18px;
+    color: #0075c0;
+}
+
+.content-body {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    background-color: #fff;
+    flex-grow: 1;
+    overflow: scroll;
+    box-sizing: border-box;
+}
+
+.content-body .button-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    left: 0;
+}
+
+.content-body .button-list {
+    padding: 16px;
+}
+
+.content-body .check-all-dropdown .m-btn {
+    background-color: #fff;
+}
+
+.content-body .check-all-dropdown .m-btn:hover {
+    background-color: #e5e5e5;
+}
+
+.content-body .check-all-dropdown .m-btn:active {
+    background-color: #f1f1f1;
+}
+
+.content-body .ultility-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.content-body .body-search {
+    height: 32px;
+}
+
+.content-body .body-search input {
+    width: 250px;
+}
+
+.content-body .refresh-button,
+.content-body .export-button,
+.content-body .setting-button {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    margin-left: 12px;
+}
+
+.content-body .data-table {
+    flex-grow: 1;
+    box-sizing: border-box;
+    max-height: calc(100vh - 280px + 64px + 20px);
+    margin-left: 10px;
+}
+
+/* width */
+.content-body::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+    background-color: #fff;
+}
+
+/* Handle */
+.content-body::-webkit-scrollbar-thumb {
+    background-color: rgb(182, 182, 182);
+}
+
+/* Handle on hover */
+.content-body::-webkit-scrollbar-thumb:hover {
+    background: #868686;
+}
+
+/*Xử lý dropdown*/
+#m-dropdown.m-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 35px;
+    width: 104px;
+    box-sizing: border-box;
+    border: 1px solid rgb(121, 121, 121);
+    padding: 2px 1px;
+    z-index: 5;
+    background-color: #fff;
+}
+
+#m-dropdown.m-dropdown div {
+    width: 100%;
+    padding: 5px 10px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+#m-dropdown.m-dropdown div:hover {
+    background-color: #dbdbdb;
+    color: #2ca01c;
+}

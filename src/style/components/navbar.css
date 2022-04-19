@@ -1,0 +1,135 @@
+.m-navbar {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.m-navbar .header-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    margin: 0px 10px;
+}
+
+.m-navbar .m-branch-name {
+    text-transform: uppercase;
+}
+
+.m-navbar .angle-down {
+    display: block;
+    width: 14px;
+    height: 14px;
+}
+
+.m-navbar .ms-tooltip .header-current-db {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ebedf0;
+    padding: 0 12px;
+    border-radius: 40px;
+    margin-left: 15px;
+    cursor: pointer;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.m-navbar .ms-tooltip .icon-header-current-db {
+    width: 8px;
+    height: 8px;
+    background-color: #4ea344;
+    border-radius: 50%;
+    border: 1px solid #fff;
+}
+
+.m-navbar .ms-tooltip .header-current-db-name {
+    padding-left: 7px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    color: #111;
+}
+
+.m-navbar .ms-download {
+    width: 24px;
+    height: 24px;
+    margin-right: 25px;
+    cursor: pointer;
+}
+
+.m-navbar .header-space {
+    padding: 0;
+    margin: 0;
+    flex-grow: 1 !important;
+}
+
+.m-navbar .header-quick-search {
+    height: 32px;
+}
+
+.m-navbar .m-action {
+    width: 44px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.m-navbar .header-option {
+    margin-left: 20px;
+    position: relative;
+    --background-color: #4ea344;
+}
+
+.m-navbar .header-setting {
+    position: relative;
+    --background-color: #000;
+}
+
+.m-navbar .chatting {
+    position: relative;
+    --background-color: #000;
+}
+
+.m-navbar .help {
+    position: relative;
+    --background-color: #000;
+}
+
+.m-navbar .notify {
+    position: relative;
+    --background-color: #000;
+}
+
+.m-navbar .m-action:hover {
+    background-color: var(--background-color);
+}
+
+.m-navbar .m-action:hover::after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-bottom: 8px solid transparent;
+    border-left: 22px solid transparent;
+    border-right: 22px solid transparent;
+    border-top: 8px solid var(--background-color);
+    position: absolute;
+    bottom: -16px;
+    left: 0;
+}
+
+.m-navbar .option-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.m-navbar .account-info {
+    padding-right: 20px;
+}
+
+.m-navbar .user-avatar {
+    width: 32px;
+    height: 32px;
+}

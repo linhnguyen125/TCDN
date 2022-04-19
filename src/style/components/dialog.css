@@ -1,0 +1,72 @@
+.m-wrapper-dialog {
+	background-color: rgba(0, 0, 0, 0.425);
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	left: 0;
+	top: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 999;
+}
+
+.m-dialog {
+	width: 444px;
+	padding: 32px;
+	background-color: #fff;
+	box-sizing: border-box;
+}
+
+.m-dialog .m-dialog-header {
+	width: 100%;
+	display: flex;
+	box-sizing: border-box;
+}
+
+.m-dialog .m-dialog-header .m-icon {
+	max-width: 48px;
+	height: 48px;
+	flex-shrink: 0;
+}
+
+.m-dialog .m-dialog-header .m-text {
+	padding: 12px 0px 0px 16px;
+	margin-bottom: 32px;
+	flex-grow: 1;
+}
+
+.m-dialog .m-dialog-footer {
+	padding-top: 20px;
+	border-top: 1px solid #b8bcc3;
+}
+
+.m-dialog.m-dialog-info .m-dialog-header .m-icon {
+	background-position: -746px -455px;
+}
+
+.m-dialog.m-dialog-info .m-dialog-footer {
+	text-align: center;
+}
+
+.m-dialog.m-dialog-warning .m-dialog-header .m-icon {
+	background-position: -592px -455px;
+}
+
+.m-dialog.m-dialog-warning .m-dialog-footer {
+	text-align: right;
+}
+
+.m-dialog.m-dialog-warning.delete .m-dialog-header .m-icon {
+	background-position: -592px -455px;
+}
+
+.m-dialog.m-dialog-warning.delete .m-dialog-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.m-dialog.m-dialog-warning.edit .m-dialog-header .m-icon {
+	background-position: -826px -455px;
+}

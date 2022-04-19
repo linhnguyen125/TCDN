@@ -1,0 +1,93 @@
+@import url("./components/icon.css");
+@import url("./components/input.css");
+@import url("./components/selectbox.css");
+@import url("./components/button.css");
+@import url("./components/text.css");
+@import url("./components/table.css");
+@import url("./components/checkbox.css");
+@import url("./components/modal.css");
+@import url("./components/custom.css");
+@import url("./components/dialog.css");
+@import url("./components/paging.css");
+@import url("./components/toast.css");
+@import url("./components/loading.css");
+@import url("./components/date-picker.css");
+@import url("./components/text-area.css");
+@import url("./components/m-table-editor.css");
+@import url("./components/animation.css");
+
+@font-face {
+    font-family: notosans-regular;
+    src: url("../assets/fonts/notosans-regular.2cb88a13.woff2");
+}
+
+@font-face {
+    font-family: notosans-bold;
+    src: url("../assets/fonts/notosans-bold.3ede5aff.woff2");
+}
+
+:root {
+    --sidebar_width: 178px;
+}
+
+.responsive {
+    --sidebar_width: 52px;
+}
+
+body {
+    margin: 0px;
+    font-family: notosans-regular;
+    font-size: 13px;
+    overflow-x: hidden;
+}
+
+.m-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+}
+
+.m-navbar {
+    height: 48px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.m-sidebar {
+    width: var(--sidebar_width);
+}
+
+.m-content-area {
+    flex-grow: 1;
+    max-width: calc(100% - var(--sidebar_width));
+    box-sizing: border-box;
+}
+
+.m-main-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 48px);
+    max-height: 100%;
+    background-color: #f4f5f8;
+    padding-left: 20px;
+    padding-right: 30px;
+    box-sizing: border-box;
+    /*overflow: scroll;*/
+}
+
+/*!* width *!*/
+/*.m-main-content::-webkit-scrollbar {*/
+/*    height: 8px;*/
+/*    width: 8px;*/
+/*    background-color: #fff;*/
+/*}*/
+
+/*!* Handle *!*/
+/*.m-main-content::-webkit-scrollbar-thumb {*/
+/*    background-color: rgb(182, 182, 182);*/
+/*}*/
+
+/*!* Handle on hover *!*/
+/*.m-main-content::-webkit-scrollbar-thumb:hover {*/
+/*    background: #868686;*/
+/*}*/

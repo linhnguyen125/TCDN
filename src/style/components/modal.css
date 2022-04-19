@@ -1,0 +1,102 @@
+.m-wrapper-modal {
+    background-color: rgba(0, 0, 0, 0.2);
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+.m-modal {
+    width: 900px;
+    height: 625px;
+    max-height: 625px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.m-modal div {
+    box-sizing: border-box;
+}
+
+.m-modal .m-modal-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 24px;
+}
+
+.m-modal .m-header-left,
+.m-modal .m-header-right {
+    display: flex;
+}
+
+.m-modal .m-header-left {
+    padding: 20px 12px 20px 32px;
+    align-items: center;
+}
+
+.m-modal .m-header-title {
+    font-size: 24px;
+    color: #111;
+    font-weight: 700;
+}
+
+.m-modal .m-header-left label {
+    margin: 0px 19.5px;
+}
+
+.m-modal .m-header-right {
+    padding: 12px;
+}
+
+.m-modal .m-header-right .m-help,
+.m-modal .m-header-right .m-close {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.m-modal .m-header-right .m-help {
+    background-position: -88px -144px;
+}
+
+.m-modal .m-header-right .m-close {
+    background-position: -143px -144px;
+    margin-left: 6px;
+}
+
+.m-modal .m-modal-content {
+    padding: 0px 32px 20px 32px;
+    overflow: hidden;
+}
+
+.m-modal .m-modal-content .info {
+    width: 100%;
+    display: flex;
+    /*align-items: center;*/
+    padding-bottom: 12px;
+}
+
+.m-modal .m-modal-content .contact {
+    width: 100%;
+    padding-top: 12px;
+    padding-bottom: 40px;
+}
+
+.m-modal .m-modal-footer {
+    margin: 0 32px;
+    padding: 20px 0;
+    border-top: 1px solid #b8bcc3;
+    box-sizing: border-box;
+}
+
+.m-icon-close {
+    background-position: -144px -144px;
+}

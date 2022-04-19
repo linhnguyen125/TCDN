@@ -1,0 +1,238 @@
+.ca-payment {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+/*header*/
+
+.ca-payment .header {
+    top: 0;
+    width: 100%;
+    background-color: #f4f5f8;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 72px;
+}
+
+.ca-payment .header .top-header {
+    display: flex;
+    align-items: center;
+    padding: 16px 16px 20px 16px;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ca-payment .header .title {
+    font-weight: 700;
+    font-size: 24px;
+    padding: 0 0 0 12px;
+    color: #111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ca-payment .header .header-detail-input {
+    display: flex;
+    flex: 1;
+    justify-content: left;
+    align-items: center;
+    padding-left: 24px;
+    min-width: 500px;
+}
+
+.ca-payment .header .header-detail-btn {
+    display: flex;
+    align-items: center;
+}
+
+.ca-payment .header .header-detail-btn a {
+    text-decoration: none;
+}
+
+.ca-payment .header .header-detail-btn span:hover a {
+    text-decoration: underline;
+}
+
+.ca-payment .header .detail-btn {
+    width: 40px;
+    height: 36px;
+    padding: 6px 8px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.ca-payment .header .detail-btn:hover {
+    background-color: #ccc;
+}
+
+/*content*/
+
+.ca-payment .content {
+    overflow-y: scroll;
+    max-height: calc(100vh - 72px - 50px);
+    min-height: 0;
+    min-width: 0;
+    overflow-x: hidden;
+    position: relative;
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+}
+
+.ca-payment .content::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+    background-color: #fff;
+}
+
+.ca-payment .content::-webkit-scrollbar-thumb {
+    background-color: rgb(182, 182, 182);
+}
+
+.ca-payment .content::-webkit-scrollbar-thumb:hover {
+    background: #868686;
+}
+
+.ca-payment .content .content-top {
+    background-color: #f4f5f8;
+    position: sticky;
+    left: 0;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.ca-payment .content-top .main-information {
+    display: flex;
+    padding: 8px 24px 20px;
+    box-sizing: border-box;
+}
+
+.ca-payment .content-top .right-separate {
+    padding-right: 16px;
+}
+
+.ca-payment .content-top .column-space {
+    padding-right: 12px;
+}
+
+.ca-payment .content-top .root-invoice {
+    box-sizing: border-box;
+    white-space: nowrap;
+    padding: 28px 6px 0 6px;
+}
+
+.ca-payment .content-top .reference-title-main {
+    margin-right: 16px;
+    min-width: 75px;
+}
+
+.ca-payment .content-top .reference-title {
+    cursor: pointer;
+    color: #0075c0;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 12px;
+}
+
+.ca-payment .content-top .left-separate {
+    padding-left: 16px;
+    border-left: 1px solid #d4d7dc;
+    width: 185px;
+}
+
+.ca-payment .content-top .summary-info-title {
+    font-size: 13px;
+}
+
+.ca-payment .content-top .summary-info-number {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.ca-payment .content-top ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ca-payment .content-top .grid-tab {
+    background: #fff;
+    width: 100%;
+    position: relative;
+}
+
+.ca-payment .content-top .tab-detail {
+    /* width: calc(100vw - 10px); */
+    padding: 16px 16px 16px 24px;
+    position: sticky;
+    left: 0;
+    display: flex;
+}
+
+.ca-payment .content-top .ms-tabs-btn {
+    margin: 0;
+    /*padding: 0 16px;*/
+    color: #0075c0 !important;
+    position: relative;
+    width: 100%;
+    background: 0 0;
+    border: 0;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all .2s ease;
+    z-index: 0;
+    font-size: 13px;
+}
+
+.ca-payment .content-top .tab-label {
+    color: #0075c0;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.ca-payment .content-top .tab-label:hover {
+    background: 0 0;
+    color: #2ca01c;
+}
+
+.ca-payment .content-top .grid-option {
+    /* position: relative;
+    right: 30px; */
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.ca-payment .content-top .label-option {
+    padding-right: 10px;
+    white-space: nowrap;
+    padding-left: 20px;
+}
+
+/*footer*/
+
+.ca-payment .footer {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    bottom: 0;
+    margin: 0;
+    padding: 0 16px;
+    box-sizing: border-box;
+    outline: none;
+    text-transform: none;
+    text-decoration: none;
+    background-color: #38393D;
+    width: 100%;
+    height: 50px;
+}

@@ -1,0 +1,71 @@
+.m-paging {
+    position: fixed;
+    bottom: 8px;
+    width: calc(100% - var(--sidebar_width) - 58px);
+    height: 56px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    background-color: #fff;
+}
+
+.m-paging .m-paging-center {
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-end;
+    padding-right: 16px;
+    box-sizing: border-box;
+}
+
+.m-paging .m-paging-center .m-icon-input {
+    right: 0 !important;
+    width: 32px;
+    height: 30px;
+    cursor: pointer;
+    background-position: -552px -353px !important;
+}
+
+.m-paging .m-paging-center .m-icon-input:hover {
+    background-color: #cfcfcf;
+}
+
+.m-paging .m-paging-right .next-page button,
+.m-paging .m-paging-right .prev-page button {
+    outline: none;
+    background-color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.m-paging .m-paging-right .next-page button.not-allowed,
+.m-paging .m-paging-right .prev-page button.not-allowed {
+    cursor: not-allowed !important;
+}
+
+.m-paging .m-paging-right,
+.m-paging .m-paging-right .page-number {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.m-paging .m-paging-right .page-number button {
+    outline: none;
+    border: none;
+    background-color: #fff;
+    padding: 0px 6px;
+    cursor: pointer;
+}
+
+.m-paging .m-paging-right .page-number .selected {
+    border: 1px solid #e0e0e0;
+    font-weight: 700;
+    box-sizing: border-box;
+}
+
+.m-paging .m-paging-right .page-number .disabled {
+    font-weight: 700;
+    cursor: default;
+}

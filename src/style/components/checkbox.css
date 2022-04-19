@@ -1,0 +1,109 @@
+/*==== Radio box ====*/
+.m-radiobox {
+    display: inline-block;
+    position: relative;
+    padding-left: 26px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.m-radiobox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Create a custom radio button */
+.m-radiobox .m-radio-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border-radius: 50%;
+    border: 1px solid #afafaf;
+    box-sizing: border-box;
+}
+
+.m-radiobox .m-radio-circle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    height: 10px;
+    width: 10px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+/* When the radio button is checked */
+.m-radiobox input:checked ~ .m-radio-border {
+    border-color: #2ca01c;
+}
+
+.m-radiobox input:checked ~ .m-radio-circle {
+    background-color: #2ca01c;
+}
+
+/* ==== Check box ==== */
+.m-checkbox {
+    display: inline-block;
+    position: relative;
+    padding-left: 26px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: inline-block;
+    height: 14px;
+}
+
+/* Hide the browser's default checkbox */
+.m-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    display: none;
+}
+
+/* Create a custom check button */
+.m-checkbox .m-check-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border: 1px solid #afafaf;
+    border-radius: 2px;
+    box-sizing: border-box;
+    transition: all .2s ease;
+}
+
+.m-checkbox .m-check-mark {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 14px;
+    width: 14px;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+/* When the check button is checked */
+.m-checkbox input:checked ~ .m-check-border {
+    border-color: #2ca01c;
+    transform: rotate(90deg);
+}
+
+.m-checkbox input:checked ~ .m-check-mark {
+    background-image: url("../../assets/img/Sprites.64af8f61.svg");
+    background-repeat: no-repeat;
+    background-position: -1225px -361px;
+}

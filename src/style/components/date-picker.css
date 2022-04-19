@@ -1,0 +1,39 @@
+.mx-input {
+    height: 32px !important;
+    border-radius: 2px !important;
+    border: 1px solid #bbb !important;
+}
+
+.mx-input:hover {
+    border: 1px solid #babec5 !important;
+}
+
+.mx-input:focus {
+    border: 1px solid #2ca01c !important;
+}
+
+m-input .active {
+    background-color: #2ca01c !important;
+}
+
+.today {
+    color: #2ca01c !important;
+}
+
+.mx-input-wrapper {
+    width: 167.2px !important;
+}
+
+.mx-calendar-content .cell:hover {
+    background-color: rgba(44, 160, 28, 0.15) !important;
+}
+
+.mx-calendar-content .cell.active {
+    background-color: #2ca01c !important;
+    color: #fff !important;
+}
+
+.mx-btn:hover {
+    border-color: #2ca01c !important;
+    color: #2ca01c !important;
+}

@@ -1,0 +1,287 @@
+.m-icon {
+    background-image: url("../../assets/img/Sprites.64af8f61.svg");
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+}
+
+.m-icon-24 {
+    background-size: 24px 24px;
+}
+
+.m-icon-full {
+    background-size: contain;
+}
+
+.m-icon-toggle-dark {
+    background-position: -1153px -28px;
+}
+
+.m-icon-toggle-light {
+    background-position: -424px -88px;
+}
+
+.m-icon-overview-dark {
+    background-position: -30px -1628px;
+}
+
+.m-menu-link.active .m-icon-overview-dark {
+    background-position: -30px -1585px;
+}
+
+.m-icon-money-dark {
+    background-position: -75px -1628px;
+}
+
+.m-menu-link.active .m-icon-money-dark {
+    background-position: -75px -1586px;
+}
+
+.m-icon-bank-dark {
+    background-position: -119px -1628px;
+}
+
+.m-menu-link.active .m-icon-bank-dark {
+    background-position: -119px -1585px;
+}
+
+.m-icon-bag-dark {
+    background-position: -163px -1628px;
+}
+
+.m-menu-link.active .m-icon-bag-dark {
+    background-position: -163px -1585px;
+}
+
+.m-icon-sale-dark {
+    background-position: -207px -1628px;
+}
+
+.m-icon-invoice-dark {
+    background-position: -252px -1628px;
+}
+
+.m-icon-stock-dark {
+    background-position: -294px -1628px;
+}
+
+.m-icon-tools-dark {
+    background-position: -339px -1628px;
+}
+
+.m-icon-fixed-assets-dark {
+    background-position: -381px -1630px;
+}
+
+.m-icon-tax-dark {
+    background-position: -426px -1630px;
+}
+
+.m-icon-price-dark {
+    background-position: -470px -1628px;
+}
+
+.m-icon-general-dark {
+    background-position: -513px -1628px;
+}
+
+.m-icon-budget-dark {
+    background-position: -381px -1659px;
+}
+
+.m-icon-report-dark {
+    background-position: -550px -1628px;
+}
+
+.m-icon-finance-dark {
+    background-position: -207px -1664px;
+}
+
+.m-icon-header-dark {
+    background-position: -842px -30px;
+}
+
+.m-icon-header-light {
+    background-position: -163px -1585px;
+}
+
+.m-icon-angle-down {
+    background-position: -1129px -359px;
+}
+
+.m-icon-download {
+    background-position: -1549px -403px;
+}
+
+.m-icon-search {
+    background-position: -992px -360px;
+}
+
+.m-icon-option-dark {
+    background-position: -568px -30px;
+}
+
+.m-action:hover .m-icon-option-dark {
+    background-position: -568px -76px;
+}
+
+.m-icon-setting-dark {
+    background-position: -675px -30px;
+}
+
+.m-action:hover .m-icon-setting-dark {
+    background-position: -143px -88px;
+}
+
+.m-icon-setting-medium {
+    background-position: -88px -200px;
+}
+
+.setting-button:hover .m-icon-setting-medium {
+    background-position: -32px -144px;
+}
+
+.m-icon-chatting-dark {
+    background-position: -899px -30px;
+}
+
+.m-action:hover .m-icon-chatting-dark {
+    background-position: -368px -88px;
+}
+
+.m-icon-help-dark {
+    background-position: -731px -30px;
+}
+
+.m-action:hover .m-icon-help-dark {
+    background-position: -200px -88px;
+}
+
+.m-icon-notify-dark {
+    background-position: -786px -30px;
+}
+
+.m-action:hover .m-icon-notify-dark {
+    background-position: -256px -88px;
+}
+
+.m-icon-angle-down-small {
+    background-position: -464px -409px;
+}
+
+.m-icon-more-dark {
+    background-position: -560px -360px;
+}
+
+.m-icon-more-light {
+    background-position: -849px -360px;
+}
+
+.m-icon-back {
+    background-position: -225px -360px;
+}
+
+.export-button:hover .m-icon-export-medium {
+    background-position: -705px -256px;
+}
+
+.m-icon-export-light {
+    background-position: -143px -88px;
+}
+
+.m-icon-export-medium {
+    background-position: -705px -200px;
+}
+
+/* .m-icon-refresh-dark {
+	background-position: -1096px -88px;
+} */
+
+.m-icon-refresh-light {
+    background-position: -143px -88px;
+}
+
+.m-icon-refresh-medium {
+    background-position: -424px -200px;
+}
+
+.refresh-button:hover .m-icon-refresh-medium {
+    background-position: -1096px -88px;
+}
+
+.m-icon-edit {
+    background-position: -892px -360px;
+}
+
+.m-icon-avatar {
+    background-position: -352px -895px;
+    border-radius: 50%;
+}
+
+.m-svg-price {
+    background-image: url("../../assets/img/qt_TienMat.svg");
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+}
+
+.m-process-customer {
+    background-position: -872px -200px;
+}
+
+.m-process-provider {
+    background-position: -928px -200px;
+}
+
+.m-process-employee {
+    background-position: -984px -200px;
+}
+
+.m-calculate {
+    background-position: -1376px -256px;
+}
+
+.m-icon-funnel-icon {
+    background-position: -1814px -202px;
+}
+
+.m-arrow-right--black {
+    background-position: -320px -360px;
+}
+
+.mi-chevron-left {
+    background-position: -35px -360px;
+}
+
+.m-arrow-check-all {
+    background-position: -256px -143px;
+}
+
+.m-icon-delete {
+    background-position: -464px -312px;
+}
+
+.m-recent-log {
+    background-position: -648px -144px;
+}
+
+.m-tour {
+    background-position: -984px -144px;
+}
+
+.m-close {
+    background-position: -144px -144px;
+}
+
+.m-attach {
+    background-position: -539px -203px;
+}
+
+.m-arrow-dropdown {
+    background-position: -553px -351px;
+}
+
+.m-plus--success {
+    background-position: -28px -308px;
+}
+

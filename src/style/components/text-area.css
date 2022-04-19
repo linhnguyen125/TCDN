@@ -1,0 +1,26 @@
+.m-text-area {
+    resize: none;
+    border-radius: 3px;
+    border: 1px solid #babec5;
+    display: block;
+    padding: 9px;
+    color: #000;
+    font-size: 13px;
+}
+
+/* width */
+.m-text-area::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+    background-color: #fff;
+}
+
+/* Handle */
+.m-text-area::-webkit-scrollbar-thumb {
+    background-color: rgb(182, 182, 182);
+}
+
+/* Handle on hover */
+.m-text-area::-webkit-scrollbar-thumb:hover {
+    background: #868686;
+}

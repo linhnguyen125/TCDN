@@ -1,0 +1,131 @@
+/*==== input with icon ====*/
+.m-input-icon {
+    display: inline-block;
+    position: relative;
+    width: fit-content;
+    box-sizing: border-box;
+}
+
+.m-input-icon input {
+    height: 32px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    padding: 0px 35.75px 0px 10px;
+    color: #111;
+    border: 1px solid #ebedf0;
+}
+
+.m-input-icon input::placeholder {
+    font-style: italic;
+}
+
+.m-input-icon input:hover {
+    border: 1px solid #c7c8ca;
+}
+
+.m-input-icon input:focus {
+    border-color: #2ca01c;
+    outline: none;
+}
+
+.m-input-icon .m-icon-input {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: 10px;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
+/*==== input ====*/
+.m-input {
+    width: 100%;
+    height: 100%;
+}
+
+.m-input label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding-bottom: 4px;
+    white-space: nowrap;
+    color: #111;
+    cursor: pointer;
+}
+
+.m-input > input {
+    height: 32px;
+    padding: 0px 10px 0px 12px;
+    border-radius: 2px;
+    border: 1px solid #babec5;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.m-input textarea {
+    font-family: inherit;
+    border: 1px solid #babec5;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.m-input > input:hover {
+    outline: 1px solid #e2e2e2
+}
+
+.m-input textarea:hover {
+    outline: 1px solid #e2e2e2;
+}
+
+.m-input > input:focus {
+    outline: none;
+    border: 1px solid #2ca01c;
+}
+
+.m-input textarea:focus {
+    outline: none;
+    border: 1px solid #2ca01c !important;
+    cursor: text !important;
+}
+
+.m-input .m-input-required {
+    color: red;
+}
+
+.m-input .invalid,
+.m-input .invalid {
+    border: 1px solid red !important;
+}
+
+.m-input .invalid:hover,
+.m-input .invalid:hover {
+    border: 1px solid red !important;
+}
+
+input::placeholder {
+    color: #b2b2b2;
+    font-style: italic;
+    font-size: 12px;
+}
+
+/*Select box*/
+.m-select {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    height: 32px;
+    border-radius: 4px;
+    color: #111;
+    border: 1px solid #babec5;
+    outline: none;
+}
+
+.m-select:hover {
+    border: 1px solid #c7c8ca;
+    outline: #e2e2e2;
+}
+
+.m-select input:focus {
+    border-color: #2ca01c;
+    outline: none;
+}

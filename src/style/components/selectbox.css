@@ -1,0 +1,124 @@
+.v-select {
+    background-color: white !important;
+}
+
+.m-nav-select {
+    display: flex;
+}
+
+.m-nav-select .m-nav-select-name {
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: 600;
+    max-width: 600px;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    color: #111;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+/* =========== combobox ============ */
+
+.m-combobox {
+    width: 175px;
+}
+
+/*vue-select*/
+.vs__dropdown-option {
+    color: #000 !important;
+    display: flex !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    align-items: center !important;
+}
+
+.vs--disabled .vs__selected {
+    display: none;
+}
+
+.vs__selected {
+    height: 26px !important;
+    padding: 0 2px !important;
+    margin: 2px 3px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 34px);
+    text-align: left;
+}
+
+.vs__dropdown-toggle {
+    border-radius: 2px !important;
+    padding: 0 !important;
+    height: 32px !important;
+    border: 1px solid #babec5 !important;
+}
+
+.vs__dropdown-option--highlight {
+    background: #ebedf0 !important;
+    color: #2ca01c !important;
+}
+
+.vs__dropdown-option.vs__dropdown-option--selected {
+    background-color: #2ca01c !important;
+    color: #fff !important;
+}
+
+.vs__actions {
+    position: absolute !important;
+    width: 30px !important;
+    height: 30px !important;
+    top: 1px !important;
+    right: 1px !important;
+    border-radius: 2px !important;
+    z-index: 1;
+}
+
+.vs__actions:hover {
+    cursor: pointer !important;
+    background-color: #e0e0e0 !important;
+}
+
+.vs__actions svg {
+    width: 32px !important;
+    height: 32px !important;
+    position: absolute !important;
+    top: 0 !important;
+    right: -2px !important;
+    background: url("../../assets/img/Sprites.64af8f61.svg") -552px -351px !important;
+}
+
+.vs__actions svg path {
+    display: none !important;
+}
+
+input.vs__search::placeholder {
+    color: #b2b2b2;
+    font-style: italic;
+    font-size: 12px;
+    padding-bottom: 5px;
+}
+
+input.vs__search {
+    margin: 0 !important;
+    height: 32px;
+    border: none;
+}
+
+input.vs__search:focus {
+    border: none !important;
+    flex-grow: unset !important;
+    margin: 0 !important;
+    max-width: 100%;
+    outline: none;
+    width: 100% !important;
+    z-index: 1
+}
+
+input.vs__search:disabled {
+    display: none !important;
+}
