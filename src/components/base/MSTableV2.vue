@@ -38,9 +38,10 @@
           <span class="m-check-mark"></span>
         </label>
       </td>
-      <td v-for="(thead, index) in headerData" :key="index" :class="thead.bodyClass">
-        <p :style="{'width': thead.col_width+'px', 'min-width': thead.col_width+'px !important', 'max-width': thead.col_width+'px !important'}"
-           class="content">{{ showData(data[thead.key], thead.key) }}</p>
+      <td v-for="(thead, index) in headerData" :key="index"
+          :style="{'width': thead.col_width+'px', 'min-width': thead.col_width+'px !important', 'max-width': thead.col_width+'px !important'}"
+          :class="thead.theadClass">
+        <p class="content">{{ showData(data[thead.key], thead.key) }}</p>
       </td>
       <td v-if="showFunction === true" class="sticky r-0">
         <div class="func">
@@ -172,9 +173,12 @@ export default {
      * @author Nguyễn Văn Linh
      */
     showData(data, key) {
-      if (data !== null && (key === "date_of_birth" || key === "identity_date")) {
+      if (data !== null && (key === "date_of_birth" || key === "identity_date") || key === "posted_date" || key === "refdate") {
         let format = moment(data)
         return format.format('DD/MM/YYYY');
+      }
+      if (data !== null && (key === "total_amount" || key === "document_included")) {
+        return Intl.NumberFormat().format(data);
       }
       return data;
     },

@@ -3,11 +3,7 @@
     <div id="m-dropdown-func" class="m-dropdown-func" v-click-outside="onclickOutside"
          v-show="isShowFunc"
     >
-      <div>Xem</div>
-      <div>Sửa</div>
-      <div @click="copy">Nhân bản</div>
-      <div @click="onDelete">Xóa</div>
-      <div>Ngừng sử dụng</div>
+      <slot></slot>
     </div>
   </transition>
 </template>
@@ -16,7 +12,7 @@
 import vClickOutside from "click-outside-vue3";
 
 export default {
-  name: "ProviderDropDown",
+  name: "CAPaymentDropdown",
   directives: {
     clickOutside: vClickOutside.directive,
   },

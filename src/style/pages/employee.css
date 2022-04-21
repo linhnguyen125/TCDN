@@ -45,6 +45,7 @@
     margin-top: 20px;
     background-color: #fff;
     flex-grow: 1;
+    height: calc(100% - 229px - 52px);
     overflow: scroll;
     box-sizing: border-box;
 }

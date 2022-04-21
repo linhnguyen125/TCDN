@@ -219,7 +219,7 @@
 	width: 32px !important;
 	min-width: 32px !important;
 	max-width: 32px !important;
-	text-align: center;
+	text-align: center !important;
 }
 
 .w-145 {

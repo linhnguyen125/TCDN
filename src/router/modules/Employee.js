@@ -4,6 +4,7 @@ import CAProcess from "@/view/ca/CAProcess.vue";
 import ProviderList from "@/view/provider/ProviderList.vue";
 import AccountList from "@/view/account/AccountList.vue";
 import CAPaymentDetail from "@/view/popup/CAPaymentDetail";
+import CAPaymentList from "@/view/ca/CAPaymentList";
 
 const router = [
     // { path: "/employee", component: EmployeeList },
@@ -17,7 +18,7 @@ const router = [
             },
             {
                 path: "/CA/CAReceipt",
-                component: ProviderList,
+                component: CAPaymentList,
             },
         ],
     },

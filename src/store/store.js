@@ -6,6 +6,7 @@ import Account from "./modules/account";
 import Layout from "./modules/layout";
 import AccountObject from "./modules/account_object";
 import Location from "@/store/modules/location";
+import Payment from "@/store/modules/payment";
 
 export default createStore({
     state: {
@@ -18,5 +19,6 @@ export default createStore({
         Layout,
         AccountObject,
         Location,
+        Payment
     },
 });

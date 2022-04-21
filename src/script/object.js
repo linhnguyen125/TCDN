@@ -77,7 +77,7 @@ const payment_display = [
         isShow: true,
         data: "account_objects",
         header: "account_object_header",
-        label: "account_object_name",
+        label: "account_object_code",
         value: "account_object_id",
         type: 3
     },
@@ -118,6 +118,28 @@ const header_employee = [
 const header_account = [
     {name: "Số tài khoản", key: "account_number", col_width: 200, resize: false},
     {name: "Tên tài khoản", key: "account_name", col_width: 300, resize: false},
+]
+
+const payment_template = [
+    {name: 'Ngày hoạch toán', key: 'posted_date', isShow: true, col_width: '', theadClass: 'text-align-center mw-10'},
+    {name: 'Ngày chứng từ', key: 'refdate', isShow: false, col_width: '', theadClass: 'text-align-center mw-10'},
+    {
+        name: 'Số chứng từ',
+        key: 'document_included',
+        col_width: '150',
+        isShow: true,
+        theadClass: 'text-align-right mw-10'
+    },
+    {name: 'Diễn giải', key: 'journal_memo', isShow: true, col_width: '400', theadClass: 'mw-20'},
+    {name: 'Số tiền', key: 'total_amount', isShow: true, col_width: '150', theadClass: 'mw-10 text-align-right'},
+    {name: 'Mã đối tượng', key: 'account_object_code', isShow: true, col_width: '', theadClass: ''},
+    {name: 'Đối tượng', key: 'account_object_name', isShow: true, col_width: '300', theadClass: ''},
+    {name: 'Người nhận/Người nộp', key: 'account_object_contact_name', isShow: true, col_width: '', theadClass: ''},
+    {name: 'Địa chỉ', key: 'account_object_address', isShow: true, col_width: '400', theadClass: ''},
+    {name: 'Nhân viên', key: 'employee_name', isShow: true, col_width: '200', theadClass: 'mw-20'},
+    {name: 'Lý do thu chi', key: 'journal_memo', isShow: true, col_width: '400', theadClass: 'mw-10'},
+    {name: 'Loại chứng từ', key: 'payment_type', isShow: false, col_width: '100', theadClass: ''},
+    {name: 'Hoạch toán gộp nhiều hóa đơn', key: 'payment_type', isShow: false, col_width: '', theadClass: 'mw-20'},
 ]
 
 const pay_account = [

@@ -67,6 +67,11 @@
     box-sizing: border-box;
 }
 
+.m-table-editor tfoot tr th {
+    height: 34px;
+    background-color: #eceef1;
+}
+
 .m-table-editor tbody td .editable .m-textarea-table-editor:hover {
     cursor: grab;
 }

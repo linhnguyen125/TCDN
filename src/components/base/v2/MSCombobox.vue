@@ -1,9 +1,5 @@
 <template>
   <div class="m-combobox">
-    <!--    <label class="m-label" v-show="isHasLabel">-->
-    <!--      {{ labelText }}-->
-    <!--      <span class="require-mark" v-show="isRequire">*</span>-->
-    <!--    </label>-->
     <div
         class="m-custom-input-container flex align-item-center"
         v-click-outside="hideOptions"
@@ -38,7 +34,6 @@
           ref="dropDownContent"
           class="m-combobox-content"
           :class="{ 'append-body': appendToBody }"
-          :style="{'min-width: 100px': myOptions.length !== 0}"
       >
         <ms-table
             ref="table"
@@ -145,6 +140,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    cbxName: {
+      type: String,
+      default: ""
+    }
   },
   data() {
     return {
@@ -186,6 +185,7 @@ export default {
           this.selectedText = option[0][this.label];
           //css cho nó được chọn.
           this.$refs.table.addSelectedRow(option);
+          this.$emit("changeModelValue", value, this.cbxName);
         } catch (error) {
           //log ra lỗi
           console.log(error);
@@ -246,7 +246,8 @@ export default {
         // this.$refs.dropDownContent.style.minWidth = inputWidth + "px";
         this.$refs.dropDownContent.style.width = "fit-content";
       }
-    },
+    }
+    ,
     /**------------------------------------
      * Hàm xử lý ẩn dropdown content.
      * Author: quyetkaito (13/03/2022)
@@ -255,14 +256,16 @@ export default {
       // this.$refs.dropDownContent.classList.remove("show");
       this.showCombobox = false;
       this.$refs.arrow.classList.remove("rotation-180");
-    },
+    }
+    ,
     /**------------------------------------------
      *Focus vào ô input
      *Author: quyetkaito (14/04/2022)
      --------------------------------------------*/
     onFocus() {
       this.focus();
-    },
+    }
+    ,
     /**-------------------------------------
      * Thực hiện delay khi tìm kiếm.
      * Author: quyetkaito (15/03/2022)
@@ -281,14 +284,16 @@ export default {
       this.selectedText = value;
       this.myOptions = this.options.filter(item => item[this.label].toLowerCase().includes(value.toLowerCase()) || item[this.value].toLowerCase().includes(value.toLowerCase()));
       console.log("myOption", this.myOptions);
-    },
+    }
+    ,
     /**--------------------------------
      * Hàm dùng để focus vào input.
      * Author: quyetkaito (03/03/2022)
      ----------------------------------*/
     focus: function () {
       this.$refs.input.focus();
-    },
+    }
+    ,
     /**------------------------------------
      * Hàm dùng để thêm css lỗi cho input.
      * Author: quyetkaito (03/03/2022)
@@ -299,7 +304,8 @@ export default {
           "title",
           `${this.labelText} không được bỏ trống`
       );
-    },
+    }
+    ,
     /**------------------------------------
      * Hàm dùng để bỏ css lỗi cho input.
      * Author: quyetkaito (03/03/2022)
@@ -307,14 +313,16 @@ export default {
     removeError: function () {
       this.$refs.input.classList.remove("error");
       this.$refs.input.setAttribute("title", "");
-    },
+    }
+    ,
     /**-------------------------------
      * Hàm lấy ra label của input.
      * Author: quyetkaito (03/03/2022)
      ---------------------------------*/
     getLabel: function () {
       return this.labelText;
-    },
+    }
+    ,
     /**------------------------------------------
      *Hàm lấy object được chọn từ dropdown dạng bảng
      *@param {Object} object - 1 hàng của dropdown dạng bảng(nhận được từ ms-grid)
@@ -328,10 +336,14 @@ export default {
       this.$emit("update:modelValue", this.dropdownValue);
       //ẩn dropdown sau khi select
       // this.hideOptions();
-    },
-  },
-  computed: {},
-};
+    }
+    ,
+  }
+  ,
+  computed: {}
+  ,
+}
+;
 </script>
 
 <style>

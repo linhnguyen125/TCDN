@@ -109,7 +109,7 @@ export default {
       isShowModal: false,
       headerData: [
         {name: "", key: "", type: Enum.TypeOfTableEditor.CheckBox},
-        {name: "Tên cột dữ liệu", key: "col_name", type: Enum.TypeOfTableEditor.Text},
+        {name: "Tên cột dữ liệu", key: "name", type: Enum.TypeOfTableEditor.Text},
         {name: "Độ rộng", key: "col_width", type: Enum.TypeOfTableEditor.Input},
       ],
       // layout ngầm định

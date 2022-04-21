@@ -27,7 +27,7 @@
           </thead>
           <tbody class="dis-contents">
           <tr v-for="(data, index) in this.bodyData" :key="index" @click="selectRow(index)">
-            <td v-if="colIndex === true">{{ index + 1 }}</td>
+            <td v-if="colIndex === true" class="w-index text-align-center z-3">{{ index + 1 }}</td>
             <td v-for="(thead, col) in headerData" :key="col"
                 :class="['cursor-pointer', {'w-38': thead.type === typeOfTableEditor.CheckBox}]">
               <div class="editable flex align-item-center">
@@ -38,6 +38,7 @@
                           v-if="thead.type === typeOfTableEditor.Input"
                           :class="['input-editor w-full', {'text-align-right': thead.objectType === 'number'}]"
                           v-model="data[thead.key]"
+                          @change="onChange($event)"
                           :disabled="rowSelected !== index"
                           :name="`${thead.key}`">
                       <label v-if="thead.type === typeOfTableEditor.CheckBox" class="m-checkbox pl-0">
@@ -50,7 +51,7 @@
                         <span class="m-check-border"></span>
                         <span class="m-check-mark"></span>
                       </label>
-                      <span v-if="thead.type === typeOfTableEditor.Text">{{ data.name }}</span>
+                      <span v-if="thead.type === typeOfTableEditor.Text">{{ data[thead.key] }}</span>
                       <ms-combobox
                           v-if="thead.type === typeOfTableEditor.Combobox"
                           :options="data[thead.data]"
@@ -59,6 +60,8 @@
                           :searchable="true"
                           :add-item="false"
                           :list-header="data[thead.header]"
+                          :cbx-name="thead.key"
+                          @changeModelValue="changeModelValue"
                           :label="thead.label"
                           :value="thead.value">
                       </ms-combobox>
@@ -74,6 +77,15 @@
             </td>
           </tr>
           </tbody>
+          <tfoot v-if="showFooter">
+          <tr>
+            <th></th>
+            <th v-for="(thead, col) in headerData" :key="col" :class="{'text-align-right': thead.key === 'amount_oc'}">
+              <span v-if="thead.key === 'amount_oc'">{{ Intl.NumberFormat().format(totalAmount) }}</span>
+            </th>
+            <th></th>
+          </tr>
+          </tfoot>
         </table>
       </div>
     </div>
@@ -119,7 +131,7 @@ export default {
       typeOfTableEditor: Enum.TypeOfTableEditor,
       rowSelected: 0,
       customTemplate: [],
-      headerAccount: header_account,
+      totalAmount: 0,
     }
   },
   created() {
@@ -180,6 +192,10 @@ export default {
     deleteFunction: {
       type: Boolean,
       default: true
+    },
+    showFooter: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -229,6 +245,18 @@ export default {
     },
 
     /**
+     * Xử lý khi thay đổi tổng tiền
+     * @param event
+     * @since 19/04/2022
+     * @author NVLINH
+     */
+    onChange(event) {
+      if (event.target.name === 'amount_oc')
+        this.totalAmount += parseInt(event.target.value);
+      this.$emit('changeValue', event.target.value, event.target.name)
+    },
+
+    /**
      * set template (dùng khi lấy mẫu ngầm định)
      * @param layout
      * @since 13/04/2022
@@ -236,6 +264,17 @@ export default {
      */
     setCustomTemplate(layout) {
       this.columns = layout;
+    },
+
+    /**
+     * Xử lý khi thay đổi giá trị tên đối tượng (payment detail)
+     * @param value - gía trị value của v-model thay đổi
+     * @param cbxName - tên đối tượng của combobox
+     * @since 13/04/2022
+     * @author NVLINH
+     */
+    changeModelValue(value, cbxName) {
+      this.$emit("changeObject", value, this.rowSelected, cbxName);
     },
 
     /**

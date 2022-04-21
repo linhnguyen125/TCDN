@@ -64,13 +64,15 @@
   </div>
   <ms-drop-down ref="dropdown" :position="position">
     <template v-slot:default>
-      <div><router-link to="/popup/CAPaymentDetail">Phiếu chi</router-link></div>
+      <div @click="this.$refs['payment-detail'].openModal({data: {}, formMode: 1})">Phiếu chi</div>
       <div>Trả tiền theo hóa đơn</div>
       <div>Nộp thuế</div>
     </template>
   </ms-drop-down>
+  <payment-detail ref="payment-detail"></payment-detail>
 </template>
 <script>
+import CAPaymentDetail from "@/view/popup/CAPaymentDetail";
 import MSDropDown from "@/components/base/MSDropDown";
 
 export default {
@@ -82,6 +84,7 @@ export default {
   },
   components: {
     "MsDropDown": MSDropDown,
+    "PaymentDetail": CAPaymentDetail,
   },
   methods: {
     over(e) {

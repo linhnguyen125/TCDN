@@ -31,7 +31,8 @@ const Resource = {
     Message: {
         Delete: "Bạn có thực sự muốn xóa {0} <{1}> không?",
         Error_msg: "Có lỗi xảy ra, vui lòng liên hệ MISA để được hỗ trợ!",
-    }
+    },
+    ServerErrorMessage: "Có lỗi xảy ra, vui lòng liên hệ MISA để được trợ giúp!",
 }
 
 export default Resource
