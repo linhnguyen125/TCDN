@@ -8,7 +8,7 @@
           <div class="header-detail-input">
             <div class="m-input" style="width: 350px !important;">
               <v-select
-                  :options="['Phiếu thu', 'Phiếu chi', 'Khác']"
+                  :options="['1. Phiếu thu', '2. Phiếu chi', '3. Khác']"
                   label="label"
               ></v-select>
             </div>
@@ -66,6 +66,7 @@
                                 v-bind="field"
                                 :class="{invalid: errorMessage}"
                                 :title="errorMessage"
+                                :disabled="formMode === 5"
                             />
                           </Field>
                         </div>
@@ -81,6 +82,7 @@
                                 v-bind="field"
                                 :class="{invalid: errorMessage}"
                                 :title="errorMessage"
+                                :disabled="formMode === 5"
                             />
                           </Field>
                         </div>
@@ -94,6 +96,7 @@
                                 v-bind="field"
                                 :class="{invalid: errorMessage}"
                                 :title="errorMessage"
+                                :disabled="formMode === 5"
                             />
                           </Field>
                         </div>
@@ -109,6 +112,7 @@
                               v-bind="field"
                               :class="{invalid: errorMessage}"
                               :title="errorMessage"
+                              :disabled="formMode === 5"
                           />
                         </Field>
                       </div>
@@ -139,6 +143,7 @@
                                 :class="['text-align-right', {invalid: errorMessage}]"
                                 placeholder="Số lượng"
                                 :title="errorMessage"
+                                :disabled="formMode === 5"
                             />
                           </Field>
                         </div>
@@ -163,6 +168,7 @@
                               :format="formatStringV2"
                               :placeholder="formatStringV2"
                               :clearable="false"
+                              :disabled="formMode === 5"
                           ></date-picker>
                         </Field>
                       </div>
@@ -179,6 +185,7 @@
                               :format="formatStringV2"
                               :placeholder="formatStringV2"
                               :clearable="false"
+                              :disabled="formMode === 5"
                           ></date-picker>
                         </Field>
                       </div>
@@ -193,6 +200,7 @@
                               v-bind="field"
                               :class="{invalid: errorMessage}"
                               :title="errorMessage"
+                              :disabled="formMode === 5"
                           />
                         </Field>
                       </div>
@@ -205,7 +213,7 @@
                   Tổng tiền
                 </div>
                 <h1 class="summary-info-number">
-                  {{ Intl.NumberFormat('de-DE').format(payment.total_amount) }}
+                  {{ Intl.NumberFormat('vi-VN').format(payment.total_amount) }}
                 </h1>
               </div>
             </div>
@@ -244,11 +252,12 @@
                         :file-upload="true"
                         :col-index="true"
                         :show-footer="true"
+                        :form-mode="formMode"
                         object-name="description"
                         @handleAddRow="addRow"
                         @handleDeleteRow="deleteRow"
                         @handleDeleteAllRow="deleteAllRow"
-                        @changeValue="changeValue"
+                        @changeAmount="changeAmount"
                         @changeObject="changeObject"
                     ></ms-table-editor>
                   </div>
@@ -257,9 +266,9 @@
             </div>
           </div>
         </div>
-        <div class="footer">
+        <div class="footer" v-if="formMode !== 5">
           <div class="flex-1">
-            <ms-button :option="{
+            <ms-button @click="hide" :option="{
           title: 'Hủy',
           class: 'm-modal-btn bg-inherit text-white'
         }"></ms-button>
@@ -271,6 +280,25 @@
         }"></ms-button>
             <ms-button :option="{
           title: 'Cất Và In',
+          class: 'm-modal-btn-secondary'
+        }"></ms-button>
+          </div>
+        </div>
+
+        <div class="footer" v-if="formMode === 5">
+          <div class="flex-1">
+            <ms-button @click="hide" :option="{
+          title: 'Hủy',
+          class: 'm-modal-btn bg-inherit text-white'
+        }"></ms-button>
+          </div>
+          <div class="flex">
+            <ms-button @click="this.formMode = 2" :option="{
+          title: 'Sửa',
+          class: 'm-modal-btn bg-inherit text-white mr-6'
+        }"></ms-button>
+            <ms-button :option="{
+          title: 'Ghi sổ',
           class: 'm-modal-btn-secondary'
         }"></ms-button>
           </div>
@@ -316,12 +344,7 @@ export default {
   data() {
     return {
       isShow: false,
-      payment: {
-        total_amount: 0,
-        posted_date: new Date(),
-        refdate: new Date(),
-        currency_id: "VND",
-      },
+      payment: {},
       languageString: "vi",
       formatStringV2: Enum.Datepicker.Format_String_v2,
       headerData: [],
@@ -430,21 +453,29 @@ export default {
   watch: {
     "payment.account_object_code": function (value) {
       // lấy obj đối tượng được chọn
-      let accountObject = this.account_objects["data"].filter(item => item.account_object_code === value);
-      let accountObjectName = accountObject[0].account_object_name;
-      this.payment.account_object_name = accountObjectName
-      this.payment.account_object_contact_name = accountObjectName;
-      this.payment.journal_memo = `Chi tiền cho ${accountObjectName}`
+      try {
+        let accountObject = this.account_objects["data"].filter(item => item.account_object_code === value);
+        let accountObjectName = accountObject[0].account_object_name;
+        this.payment.account_object_name = accountObjectName
+        this.payment.account_object_contact_name = accountObjectName;
+        this.payment.journal_memo = `Chi tiền cho ${accountObjectName}`
+      } catch (e) {
+        console.log(e)
+      }
     },
     "payment.employee_code": function (value) {
       // lấy obj nhân viên được chọn
-      let employee = this.employees.filter(item => item.employee_code === value);
-      this.payment.employee_name = employee[0].full_name;
-      this.payment.employee_id = employee[0].employee_id;
+      try {
+        let employee = this.employees.filter(item => item.employee_code === value);
+        this.payment.employee_name = employee[0].full_name;
+        this.payment.employee_id = employee[0].employee_id;
+      } catch (e) {
+        console.log(e)
+      }
     }
   },
   methods: {
-    ...mapActions(["getLayout", "getAccountObjectsPaging", "getEmployees", "getAllAccount", "createPayment"]),
+    ...mapActions(["getLayout", "getAccountObjectsPaging", "getEmployees", "getAllAccount", "createPayment", "updatePayment"]),
 
     async onSubmit(value) {
       let descTmp = JSON.parse(JSON.stringify(this.description));
@@ -454,10 +485,10 @@ export default {
         delete item["account_objects"]
         delete item["account_header"]
         delete item["account_object_header"]
-        totalAmount += parseInt(item["amount_oc"]);
+        totalAmount += Number(item["amount_oc"]);
       })
       this.payment["ca_payment_detail"] = descTmp;
-      if (this.formMode === Enum.FormMode.Create) {
+      if (this.formMode === Enum.FormMode.Create) { // Thêm mới
         let response = await this.createPayment(this.payment);
         if (response.data.statusCode === Enum.StatusCode.Created) {
           // hiển thị thông báo thành công
@@ -465,6 +496,19 @@ export default {
             title: format(Resource.Employee.Success_created, "Phiếu chi "),
             type: Enum.ToastType.Success
           })
+          this.hide();
+        } else {
+          this.openPopup(Enum.DialogCode.Warning, Resource.ServerErrorMessage);
+        }
+      } else if (this.formMode === Enum.FormMode.Update) { // Cập nhật
+        let response = await this.updatePayment(this.payment);
+        if (response.data.statusCode === Enum.StatusCode.OK) {
+          // hiển thị thông báo thành công
+          this.showToastMsg({
+            title: format(Resource.Employee.Success_updated, "Phiếu chi "),
+            type: Enum.ToastType.Success
+          })
+          this.hide();
         } else {
           this.openPopup(Enum.DialogCode.Warning, Resource.ServerErrorMessage);
         }
@@ -514,15 +558,12 @@ export default {
 
     /**
      * Xử lý khi thay đổi tổng tiền
-     * @param value
-     * @param name
+     * @param amount
      * @since 13/04/2022
      * @author NVLINH
      */
-    changeValue(value, name) {
-      if (name === 'amount_oc') {
-        this.payment.total_amount += parseInt(value);
-      }
+    changeAmount(amount) {
+      this.payment.total_amount += amount;
     },
 
     /**
@@ -627,18 +668,51 @@ export default {
       // Format định dạng ngày (nếu có) tháng trước khi hiển thị lên form
       if (this.payment.posted_date) {
         this.payment.posted_date = new Date(this.payment.posted_date);
+      } else {
+        this.payment.posted_date = new Date();
       }
+
       if (this.payment.refdate) {
         this.payment.refdate = new Date(this.payment.refdate);
+      } else {
+        this.payment.refdate = new Date();
+      }
+
+      // Loại tiền
+      if (this.payment['currency_id'] === null || this.payment['currency_id'] === undefined) {
+        this.payment['currency_id'] = "VND";
+      }
+
+      // Tổng tiền
+      if (this.payment.total_amount === null || this.payment.total_amount === "" || this.payment.total_amount === undefined) {
+        this.payment.total_amount = 0;
       }
       // lấy dữ liệu chi tiết phiếu chi
-      let response = await axios.get(`http://localhost:5278/api/v1/CaPaymentDetails/getByRefid?refid=${data.ca_payment_id}`)
-      this.description = response.data;
-
+      if (this.formMode !== Enum.FormMode.Create) {
+        let response = await axios.get(`http://localhost:5278/api/v1/CaPaymentDetails/getByRefid?refid=${data['ca_payment_id']}`)
+        let descriptions = response.data;
+        this.description = [];
+        descriptions.forEach(item => {
+          item.accounts = this.accounts;
+          item.account_objects = this.accountObjects;
+          item.account_header = this.headerAccount;
+          item.account_object_header = this.headerAccountObject;
+          this.description.push(item);
+        })
+      } else {
+        this.description = [{
+          accounts: this.accounts,
+          account_objects: this.accountObjects,
+          account_header: this.headerAccount,
+          account_object_header: this.headerAccountObject
+        }];
+      }
       this.isShow = true;
     },
 
     hide() {
+      this.payment = {};
+      this.description = [{}];
       this.isShow = false
     },
 

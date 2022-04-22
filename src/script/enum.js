@@ -25,6 +25,7 @@ const Enum = {
         Update: 2,
         Delete: 3,
         MultiDelete: 4,
+        View: 5,
     },
     ToastType: {
         Success: "success",

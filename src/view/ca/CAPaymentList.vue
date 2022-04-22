@@ -31,10 +31,10 @@
         <div class="ms-tabs-btn">Tất cả</div>
       </li>
       <li class="ms-tabs-li">
-        <div class="ms-tabs-btn active">Thu tiền</div>
+        <div class="ms-tabs-btn">Thu tiền</div>
       </li>
       <li class="ms-tabs-li">
-        <div class="ms-tabs-btn">Chi tiền</div>
+        <div class="ms-tabs-btn active">Chi tiền</div>
       </li>
     </ul>
   </div>
@@ -101,7 +101,7 @@
     </div>
 
     <div v-if="showListAction === true && showMultiDelete === true" id="m-dropdown" class="m-dropdown block"
-         style="top: 262px;left: 335px;">
+         style="top: 382px;left: 335px;">
       <div @click="multipleDel">Xóa</div>
     </div>
 
@@ -128,7 +128,7 @@
 
   <payment-drop-down ref="payment-drop-down">
     <template v-slot:default>
-      <div @click="this.$refs['payment-detail'].openModal({data: payment, formMode: 3})">Xem</div>
+      <div @click="this.$refs['payment-detail'].openModal({data: payment, formMode: 5})">Xem</div>
       <div>Sửa</div>
       <div @click="copy">Nhân bản</div>
       <div @click="onDelete">Xóa</div>

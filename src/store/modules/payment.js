@@ -88,26 +88,23 @@ const actions = {
     /**
      * Gọi api cập nhập ncc
      * @param commit
-     * @param accountObject - Object (Value nhập từ input)
+     * @param payment - Object (Value nhập từ input)
      * @returns {Promise<AxiosResponse<any>|any>}
      * @since 27/02/2022
      * @author Nguyễn Văn Linh
      */
-    // async updateAccountObject({commit}, accountObject) {
-    //     // Hiển thị loading
-    //     loading.show();
-    //     try {
-    //         const response = await axios.put(
-    //             `${LOCAL_API_URL}/AccountObjects`,
-    //             accountObject,
-    //         );
-    //         loading.hide();
-    //         return response;
-    //     } catch (error) {
-    //         loading.hide();
-    //         return error.response;
-    //     }
-    // },
+    async updatePayment({commit}, payment) {
+        // Hiển thị loading
+        loading.show();
+        try {
+            const response = await axios.put(`${LOCAL_API_URL}/CaPayments`, payment);
+            loading.hide();
+            return response;
+        } catch (error) {
+            loading.hide();
+            return error.response;
+        }
+    },
 
     /**
      * Gọi api xóa nhiều nhân viên

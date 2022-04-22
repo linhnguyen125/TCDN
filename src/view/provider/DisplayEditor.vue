@@ -47,6 +47,7 @@
                 :is-show-control="false"
                 :header-data="headerData"
                 :body-data="listData"
+                :delete-function="false"
                 @handleChangeColumns="onChangeColumns"
             ></ms-table-editor>
           </div>

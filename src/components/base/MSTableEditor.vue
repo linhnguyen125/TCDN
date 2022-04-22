@@ -25,7 +25,7 @@
             <th v-if="deleteFunction === true" class="w-index text-align-center z-3"></th>
           </tr>
           </thead>
-          <tbody class="dis-contents">
+          <tbody v-if="formMode !== 5" class="dis-contents">
           <tr v-for="(data, index) in this.bodyData" :key="index" @click="selectRow(index)">
             <td v-if="colIndex === true" class="w-index text-align-center z-3">{{ index + 1 }}</td>
             <td v-for="(thead, col) in headerData" :key="col"
@@ -34,13 +34,16 @@
                 <div class="flex align-item-center flex-1">
                   <div :class="['h-32 w-full', thead.class]">
                     <div class="m-input flex align-item-center">
-                      <input
-                          v-if="thead.type === typeOfTableEditor.Input"
-                          :class="['input-editor w-full', {'text-align-right': thead.objectType === 'number'}]"
-                          v-model="data[thead.key]"
-                          @change="onChange($event)"
-                          :disabled="rowSelected !== index"
-                          :name="`${thead.key}`">
+                      <div class="m-input" v-if="thead.type === typeOfTableEditor.Input">
+                        <input
+                            v-if="thead.objectType !== 'number'"
+                            :ref="thead.key + rowSelected"
+                            class="input-editor w-full"
+                            v-model="data[thead.key]"
+                            :disabled="rowSelected !== index"
+                            :name="`${thead.key}`">
+                        <ms-input-number v-else v-model="data[thead.key]" @onChange="onChange"></ms-input-number>
+                      </div>
                       <label v-if="thead.type === typeOfTableEditor.CheckBox" class="m-checkbox pl-0">
                         <input
                             type="checkbox"
@@ -65,6 +68,30 @@
                           :label="thead.label"
                           :value="thead.value">
                       </ms-combobox>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td v-if="deleteFunction === true">
+              <div class="flex align-item-center justify-content-center">
+                <div @click="deleteRow(index)" class="m-icon m-icon-delete h-4 w-4 cursor-pointer"></div>
+              </div>
+            </td>
+          </tr>
+
+          </tbody>
+          <tbody v-else class="dis-contents">
+          <tr v-for="(data, index) in this.bodyData" :key="index" @click="selectRow(index)">
+            <td v-if="colIndex === true" class="w-index text-align-center z-3">{{ index + 1 }}</td>
+            <td v-for="(thead, col) in headerData" :key="col"
+                :class="['cursor-pointer', {'w-38': thead.type === typeOfTableEditor.CheckBox}]">
+              <div class="editable flex align-item-center">
+                <div class="flex align-item-center flex-1">
+                  <div :class="['h-32 w-full', thead.class]">
+                    <div class="m-input flex align-item-center">
+                      <input :class="['m-input', {'text-align-right': thead.objectType === 'number'}]"
+                             disabled="disabled" :value="data[thead.key]">
                     </div>
                   </div>
                 </div>
@@ -118,9 +145,10 @@
 <script>
 import {createPopper} from '@popperjs/core';
 import {mapGetters, mapActions} from 'vuex';
+import {formatCurrencyToSave} from '@/lib/number-format';
 import Enum from "@/script/enum";
 import MSCombobox from "@/components/base/v2/MSCombobox";
-import {header_account} from "@/script/object";
+import MSInputNumber from "@/components/base/input/MSInputNumber";
 
 export default {
   name: "MSTableEditor",
@@ -137,6 +165,11 @@ export default {
   created() {
     // khi mở form phải tích chọn những cột người dùng đã chọn
     this.columns = this.bodyData.filter(item => item["isShow"] === true);
+    // Tính tổng tiền
+    this.bodyData.forEach(item => {
+      this.totalAmount += Number(item.amount_oc);
+    })
+    if (isNaN(this.totalAmount)) this.totalAmount = 0;
   },
   computed: {
     ...mapGetters(["layout"]),
@@ -158,6 +191,7 @@ export default {
   },
   components: {
     "MsCombobox": MSCombobox,
+    "MsInputNumber": MSInputNumber,
   },
   props: {
     control: {
@@ -196,6 +230,10 @@ export default {
     showFooter: {
       type: Boolean,
       default: false
+    },
+    formMode: {
+      type: Number,
+      default: 1,
     }
   },
   watch: {
@@ -210,7 +248,9 @@ export default {
      * @author NVLINH
      */
     addRow() {
-      this.$emit("handleAddRow", this.objectName);
+      if (this.formMode !== 5) {
+        this.$emit("handleAddRow", this.objectName);
+      }
     },
 
     /**
@@ -220,8 +260,10 @@ export default {
      */
     deleteAllRow() {
       // gán lại dòng được chọn = 0
-      this.rowSelected = 0;
-      this.$emit("handleDeleteAllRow", this.objectName);
+      if (this.formMode !== 5) {
+        this.rowSelected = 0;
+        this.$emit("handleDeleteAllRow", this.objectName);
+      }
     },
 
     /**
@@ -241,19 +283,21 @@ export default {
      * @author NVLINH
      */
     deleteRow(row) {
-      this.$emit("handleDeleteRow", row, this.objectName);
+      if (this.formMode !== 5) {
+        this.$emit("handleDeleteRow", row, this.objectName);
+      }
     },
 
     /**
      * Xử lý khi thay đổi tổng tiền
-     * @param event
+     * @param amount_oc
      * @since 19/04/2022
      * @author NVLINH
      */
-    onChange(event) {
-      if (event.target.name === 'amount_oc')
-        this.totalAmount += parseInt(event.target.value);
-      this.$emit('changeValue', event.target.value, event.target.name)
+    onChange(amount_oc) {
+      let amount = formatCurrencyToSave(amount_oc);
+      this.totalAmount += amount;
+      this.$emit('changeAmount', amount)
     },
 
     /**

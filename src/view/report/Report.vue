@@ -10,18 +10,26 @@
         label="label"
     ></ms-combobox>
   </div>
+  <div class="row-input">
+    <div class="m-input">
+      <ms-input-number v-model="number"></ms-input-number>
+    </div>
+  </div>
 </template>
 
 <script>
 import {mapGetters, mapActions} from "vuex";
 import MSCombobox from "@/components/base/v2/MSCombobox";
+import MSInputNumber from "@/components/base/input/MSInputNumber";
 
 export default {
   components: {
     "MsCombobox": MSCombobox,
+    "MsInputNumber": MSInputNumber,
   },
   data() {
     return {
+      number: null,
       dropdownValue: "123456",
       options2: [
         {
