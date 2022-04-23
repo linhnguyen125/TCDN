@@ -48,6 +48,10 @@
                               :searchable="true"
                               :add-item="true"
                               :listHeader="headerAccountObject"
+                              :disabled="formMode === 5"
+                              :lazy-loading="true"
+                              cbx-name="account_object"
+                              @handleLoadNext="LoadNext"
                               label="account_object_code"
                               value="account_object_code"
                           >
@@ -125,9 +129,13 @@
                               v-model="payment.employee_code"
                               :show-header="true"
                               :searchable="true"
-                              :options="employee"
+                              :options="employees"
                               :list-header="headerEmployee"
                               :append-to-body="true"
+                              :disabled="formMode === 5"
+                              :lazy-loading="true"
+                              cbx-name="employee"
+                              @handleLoadNext="LoadNext"
                               label="employee_name"
                               value="employee_code"
                           ></ms-combobox>
@@ -136,16 +144,10 @@
                       <div class="w-4/7 flex w-240">
                         <div class="w-145 m-input">
                           <label>Kèm theo</label>
-                          <Field v-model="payment.document_included" v-slot="{field, errorMessage}"
-                                 name="document_included">
-                            <input
-                                v-bind="field"
-                                :class="['text-align-right', {invalid: errorMessage}]"
-                                placeholder="Số lượng"
-                                :title="errorMessage"
-                                :disabled="formMode === 5"
-                            />
-                          </Field>
+                          <ms-input-number
+                              v-model="payment.document_included"
+                              :disabled="formMode === 5"
+                              placeholder="Số lượng"></ms-input-number>
                         </div>
                         <div class="root-invoice">chứng từ gốc</div>
                       </div>
@@ -246,13 +248,15 @@
                 <div class="con-ms-ul-tabs tab-detail pt-0 flex">
                   <div style="width: calc(100vw - 40px);">
                     <ms-table-editor
+                        ref="table-editor"
                         :header-data="headerData"
                         :body-data="description"
                         :control="true"
                         :file-upload="true"
                         :col-index="true"
                         :show-footer="true"
-                        :form-mode="formMode"
+                        :disabled="formMode === 5"
+                        :total="payment.total_amount"
                         object-name="description"
                         @handleAddRow="addRow"
                         @handleDeleteRow="deleteRow"
@@ -266,41 +270,75 @@
             </div>
           </div>
         </div>
-        <div class="footer" v-if="formMode !== 5">
+        <!--        insert-->
+        <div class="footer" v-if="formMode === 1">
           <div class="flex-1">
             <ms-button @click="hide" :option="{
           title: 'Hủy',
-          class: 'm-modal-btn bg-inherit text-white'
+          class: 'm-modal-btn bg-inherit text-white mr-6'
         }"></ms-button>
           </div>
           <div class="flex">
-            <ms-button :option="{
-          title: 'Cất',
-          class: 'm-modal-btn bg-inherit text-white mr-6'
-        }"></ms-button>
+            <ms-button
+                type="submit"
+                :option="{
+                title: 'Cất',
+                class: 'm-modal-btn bg-inherit text-white mr-6'
+              }"
+            >
+            </ms-button>
             <ms-button :option="{
           title: 'Cất Và In',
           class: 'm-modal-btn-secondary'
         }"></ms-button>
           </div>
         </div>
-
-        <div class="footer" v-if="formMode === 5">
+        <!--        update-->
+        <div class="footer" v-if="formMode === 2">
           <div class="flex-1">
             <ms-button @click="hide" :option="{
           title: 'Hủy',
-          class: 'm-modal-btn bg-inherit text-white'
+          class: 'm-modal-btn bg-inherit text-white mr-6'
         }"></ms-button>
+            <ms-button @click="backupData" :option="{
+            title: 'Hoãn',
+            class: 'm-modal-btn bg-inherit text-white'
+          }"></ms-button>
+          </div>
+          <div class="flex">
+            <ms-button
+                type="submit"
+                :option="{
+          title: 'Cất',
+          class: 'm-modal-btn bg-inherit text-white mr-6'
+        }"></ms-button>
+            <ms-button
+                type="submit"
+                :option="{
+                  title: 'Cất Và In',
+                  class: 'm-modal-btn-secondary'
+                }"
+            >
+            </ms-button>
+          </div>
+        </div>
+        <!--        view-->
+        <div class="footer" v-if="formMode === 5">
+          <div class="flex-1">
+            <ms-button @click="hide" :option="{
+            title: 'Hủy',
+            class: 'm-modal-btn bg-inherit text-white'
+          }"></ms-button>
           </div>
           <div class="flex">
             <ms-button @click="this.formMode = 2" :option="{
-          title: 'Sửa',
-          class: 'm-modal-btn bg-inherit text-white mr-6'
-        }"></ms-button>
+            title: 'Sửa',
+            class: 'm-modal-btn bg-inherit text-white mr-6'
+          }"></ms-button>
             <ms-button :option="{
-          title: 'Ghi sổ',
-          class: 'm-modal-btn-secondary'
-        }"></ms-button>
+            title: 'Ghi sổ',
+            class: 'm-modal-btn-secondary'
+          }"></ms-button>
           </div>
         </div>
       </Form>
@@ -315,7 +353,7 @@
       @handleChangeColumn="onChangeColumn">
   </display-editor>
 
-  <provider-detail ref="provider-detail"></provider-detail>
+  <provider-detail ref="provider-detail" @created="onCreatedProvider"></provider-detail>
 
   <ms-dialog ref="dialog" :option="popupOption" @handleConfirm="confirm"></ms-dialog>
 
@@ -327,6 +365,11 @@ import {mapActions, mapGetters} from "vuex";
 import 'vue-datepicker-next/locale/vi';
 import {Form, Field} from 'vee-validate';
 import Enum from "@/script/enum";
+import {toast} from "@/lib/toast";
+import format from "string-format";
+import Resource from "@/resources/resources";
+import axios from "axios";
+import {formatCurrencyToSave} from "@/lib/number-format";
 import {header_account_object, header_employee, header_account} from "@/script/object";
 import DisplayEditor from "@/view/provider/DisplayEditor";
 import MSModalButton from "@/components/base/modal/MSModalButton";
@@ -334,10 +377,8 @@ import MSTableEditor from "@/components/base/MSTableEditor";
 import MSCombobox from "@/components/base/v2/MSCombobox";
 import ProviderDetail from "@/view/provider/ProviderDetail";
 import MSDialog from "@/components/base/v2/MSDialog";
-import {toast} from "@/lib/toast";
-import format from "string-format";
-import Resource from "@/resources/resources";
-import axios from "axios";
+import MSInputNumber from "@/components/base/input/MSInputNumber";
+import {isString} from "lodash";
 
 export default {
   name: "CAPaymentDetail",
@@ -365,6 +406,9 @@ export default {
       headerAccount: header_account,
       formMode: 1,
       popupOption: {},
+      backup: {},
+      backupDetail: {},
+      pageSizeEmployee: 20,
     }
   },
   components: {
@@ -376,6 +420,7 @@ export default {
     "MsCombobox": MSCombobox,
     ProviderDetail,
     "MsDialog": MSDialog,
+    "MsInputNumber": MSInputNumber,
   },
   async created() {
     // lấy ra custom template từ api
@@ -391,10 +436,11 @@ export default {
     }
 
     // lấy dữ liệu nhân viên
-    await this.getEmployees();
-    this.employees.forEach((item) => {
-      this.employee.push({employee_code: item.employee_code, employee_name: item.full_name});
-    })
+    await this.getEmployeesPaging({
+      pageSize: 20,
+      pageNumber: 1,
+      txtSearch: "",
+    });
 
     // lấy dữ liệu nhà cung cấp
     await this.getAccountObjectsPaging({
@@ -415,7 +461,24 @@ export default {
     }]
   },
   computed: {
-    ...mapGetters(["layout", "account_objects", "employees", "accounts"]),
+    ...mapGetters(["layout", "account_objects", "employeesPaging", "accounts", "newPaymentCode"]),
+
+    employees() {
+      let _data = [];
+      if (this.employeesPaging) {
+        let employeesPaging = this.employeesPaging["data"];
+        employeesPaging.forEach(item => {
+          _data.push({
+            employee_id: item.employee_id,
+            employee_code: item.employee_code,
+            employee_name: item.full_name,
+            address: item.address,
+            phone_number: item.phone_number
+          })
+        })
+      }
+      return _data;
+    },
 
     accountObjects() {
       let _data = [];
@@ -458,7 +521,9 @@ export default {
         let accountObjectName = accountObject[0].account_object_name;
         this.payment.account_object_name = accountObjectName
         this.payment.account_object_contact_name = accountObjectName;
-        this.payment.journal_memo = `Chi tiền cho ${accountObjectName}`
+        this.payment.journal_memo = `Chi tiền cho ${accountObjectName}`;
+        this.payment.account_object_address = accountObject[0].address;
+        this.payment.account_object_id = accountObject[0].account_object_id;
       } catch (e) {
         console.log(e)
       }
@@ -475,42 +540,82 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["getLayout", "getAccountObjectsPaging", "getEmployees", "getAllAccount", "createPayment", "updatePayment"]),
+    ...mapActions(["getLayout",
+      "getAccountObjectsPaging",
+      "getEmployeesPaging",
+      "getAllAccount",
+      "createPayment",
+      "updatePayment",
+      "getNewPaymentCode"]),
 
     async onSubmit(value) {
+      let valid = true;
       let descTmp = JSON.parse(JSON.stringify(this.description));
-      let totalAmount = 0;
+      let index = 0;
       descTmp.forEach(item => {
         delete item["accounts"]
         delete item["account_objects"]
         delete item["account_header"]
         delete item["account_object_header"]
-        totalAmount += Number(item["amount_oc"]);
+
+        if (!item['debit_account']) {
+          valid = false;
+          let refName = "debit_account" + index;
+          this.$refs['table-editor'].addErrorCbx(refName);
+          this.openPopup(Enum.DialogCode.Info, "Tài khoản nợ không được để trống")
+          return
+        }
+        if (!item['credit_account']) {
+          valid = false;
+          let refName = "credit_account" + index;
+          this.$refs['table-editor'].addErrorCbx(refName);
+          this.openPopup(Enum.DialogCode.Info, "Tài khoản có không được để trống")
+          return
+        }
+        // format lại số tiền (amount_oc)
+        if (item['amount_oc'] != 0) {
+          if (isString(item['amount_oc'])) {
+            item['amount_oc'] = formatCurrencyToSave(item['amount_oc']);
+          }
+        } else {
+          valid = false;
+          this.openPopup(Enum.DialogCode.Info, "Số tiền không được để trống")
+          return
+        }
+        index++;
       })
       this.payment["ca_payment_detail"] = descTmp;
-      if (this.formMode === Enum.FormMode.Create) { // Thêm mới
-        let response = await this.createPayment(this.payment);
-        if (response.data.statusCode === Enum.StatusCode.Created) {
-          // hiển thị thông báo thành công
-          this.showToastMsg({
-            title: format(Resource.Employee.Success_created, "Phiếu chi "),
-            type: Enum.ToastType.Success
-          })
-          this.hide();
-        } else {
-          this.openPopup(Enum.DialogCode.Warning, Resource.ServerErrorMessage);
-        }
-      } else if (this.formMode === Enum.FormMode.Update) { // Cập nhật
-        let response = await this.updatePayment(this.payment);
-        if (response.data.statusCode === Enum.StatusCode.OK) {
-          // hiển thị thông báo thành công
-          this.showToastMsg({
-            title: format(Resource.Employee.Success_updated, "Phiếu chi "),
-            type: Enum.ToastType.Success
-          })
-          this.hide();
-        } else {
-          this.openPopup(Enum.DialogCode.Warning, Resource.ServerErrorMessage);
+      // chuyển số chứng từ về dạng số
+      this.payment.document_included = formatCurrencyToSave(this.payment.document_included);
+
+      if (valid !== false) {
+        if (this.formMode === Enum.FormMode.Create) { // Thêm mới
+          let response = await this.createPayment(this.payment);
+          if (response.data.statusCode === Enum.StatusCode.Created) {
+            // hiển thị thông báo thành công
+            this.showToastMsg({
+              title: format(Resource.Employee.Success_created, "Phiếu chi "),
+              type: Enum.ToastType.Success
+            });
+            // load lại data
+            this.$emit("loadData");
+            // đóng form
+            this.hide();
+          } else {
+            this.openPopup(Enum.DialogCode.Warning, Resource.ServerErrorMessage);
+          }
+        } else if (this.formMode === Enum.FormMode.Update) { // Cập nhật
+          let response = await this.updatePayment(this.payment);
+          if (response.data.statusCode === Enum.StatusCode.OK) {
+            // hiển thị thông báo thành công
+            this.showToastMsg({
+              title: format(Resource.Employee.Success_updated, "Phiếu chi "),
+              type: Enum.ToastType.Success
+            })
+            this.hide();
+          } else {
+            this.openPopup(Enum.DialogCode.Warning, Resource.ServerErrorMessage);
+          }
         }
       }
     },
@@ -529,7 +634,8 @@ export default {
         accounts: this.accounts,
         account_objects: this.accountObjects,
         account_header: this.headerAccount,
-        account_object_header: this.headerAccountObject
+        account_object_header: this.headerAccountObject,
+        amount_oc: 0,
       });
     },
 
@@ -540,6 +646,8 @@ export default {
      */
     deleteRow(row, objectName) {
       this.description.splice(row, 1);
+      // cập nhật lại tổng tiền
+      this.updateTotalAmount();
     },
 
     /**
@@ -548,22 +656,24 @@ export default {
      * @author NVLINH
      */
     deleteAllRow(objectName) {
+      this.payment.total_amount = 0;
       this.description = [{
         accounts: this.accounts,
         account_objects: this.accountObjects,
         account_header: this.headerAccount,
-        account_object_header: this.headerAccountObject
+        account_object_header: this.headerAccountObject,
+        amount_oc: 0,
       }];
     },
 
     /**
      * Xử lý khi thay đổi tổng tiền
-     * @param amount
      * @since 13/04/2022
      * @author NVLINH
      */
-    changeAmount(amount) {
-      this.payment.total_amount += amount;
+    changeAmount() {
+      // cập nhật lại tổng tiền
+      this.updateTotalAmount();
     },
 
     /**
@@ -634,6 +744,28 @@ export default {
     },
 
     /**
+     * Cập nhật lại total amount khi thay đổi giá trị chi tiết phiếu chi
+     * @since 22/04/2022
+     * @author NVLINH
+     */
+    updateTotalAmount() {
+      let description = JSON.parse(JSON.stringify(this.description));
+      this.payment.total_amount = 0;
+      if (description.length === 0) {
+        this.payment.total_amount = 0;
+      } else {
+        description.forEach(item => {
+          if (isString(item['amount_oc'])) {
+            item['amount_oc'] = formatCurrencyToSave(item['amount_oc']);
+            this.payment.total_amount += item['amount_oc'];
+          } else {
+            this.payment.total_amount += item['amount_oc'];
+          }
+        })
+      }
+    },
+
+    /**
      * Hàm hiển thị toast message
      * @param title
      * @param type
@@ -662,16 +794,27 @@ export default {
       this.$refs.dialog.openDialog();
     },
 
+    /**
+     * Mở form chi tiết phiếu chi
+     * @param data
+     * @param formMode
+     * @returns {Promise<void>}
+     */
     async openModal({data, formMode}) {
       this.payment = data;
-      this.formMode = formMode
+      // gán formMode
+      this.formMode = formMode;
+      // lấy mã mới bind lên form
+      if (formMode === Enum.FormMode.Create) {
+        await this.getNewPaymentCode();
+        this.payment.ca_payment_code = this.newPaymentCode;
+      }
       // Format định dạng ngày (nếu có) tháng trước khi hiển thị lên form
       if (this.payment.posted_date) {
         this.payment.posted_date = new Date(this.payment.posted_date);
       } else {
         this.payment.posted_date = new Date();
       }
-
       if (this.payment.refdate) {
         this.payment.refdate = new Date(this.payment.refdate);
       } else {
@@ -687,8 +830,13 @@ export default {
       if (this.payment.total_amount === null || this.payment.total_amount === "" || this.payment.total_amount === undefined) {
         this.payment.total_amount = 0;
       }
-      // lấy dữ liệu chi tiết phiếu chi
+      // lấy account object và dữ liệu chi tiết phiếu chi (detail)
       if (this.formMode !== Enum.FormMode.Create) {
+        // push account object vào list account object ban đầu
+        delete this.payment['ca_payment_detail'];
+        this.accountObjects.unshift(this.payment);
+
+        // chi tiết phiếu chi
         let response = await axios.get(`http://localhost:5278/api/v1/CaPaymentDetails/getByRefid?refid=${data['ca_payment_id']}`)
         let descriptions = response.data;
         this.description = [];
@@ -704,20 +852,83 @@ export default {
           accounts: this.accounts,
           account_objects: this.accountObjects,
           account_header: this.headerAccount,
-          account_object_header: this.headerAccountObject
+          account_object_header: this.headerAccountObject,
+          amount_oc: 0
         }];
       }
+      // gán dữ liệu phiếu chi vào backup
+      this.backup = JSON.parse(JSON.stringify(this.payment));
+      this.backupDetail = JSON.parse(JSON.stringify(this.description));
       this.isShow = true;
     },
 
+    backupData() {
+      this.payment = JSON.parse(JSON.stringify(this.backup));
+      this.description = JSON.parse(JSON.stringify(this.backupDetail));
+    },
+
+    /**
+     * Đóng form thêm mới phiếu chi
+     */
     hide() {
       this.payment = {};
       this.description = [{}];
       this.isShow = false
     },
 
+    /**
+     * Mở form nhà cung cấp
+     * @since 15/04/2022
+     * @author NVLINH
+     */
     openProviderModal() {
-      this.$refs["provider-detail"].openModal({data: {}, formMode: 1});
+      if (this.formMode !== 5) {
+        this.$refs["provider-detail"].openModal({data: {}, formMode: 1});
+      }
+      return;
+    },
+
+    /**
+     * Hàm lazy loading cho cbx
+     * @param cbxName
+     * @param txtSearch
+     * @returns {Promise<void>}
+     * @constructor
+     */
+    async LoadNext(cbxName, txtSearch) {
+      if (cbxName === 'account_object') {
+        this.pageSize += 20;
+        await this.getAccountObjectsPaging({
+          page_size: this.pageSize,
+          page_number: this.currentPage,
+          category: "vendor",
+          txt_search: txtSearch,
+          columns: this.accountObjectColumns,
+        });
+      } else if (cbxName === 'employee') {
+        this.pageSizeEmployee += 20;
+        await this.getEmployeesPaging({
+          pageSize: this.pageSizeEmployee,
+          pageNumber: 1,
+          txtSearch: txtSearch,
+        });
+      }
+    },
+
+    /**
+     * Hàm bind dữ liệu lên form khi thêm mới account object thành công
+     * @param provider
+     * @since 23/04/2022
+     * @author NVLINH
+     */
+    onCreatedProvider(provider) {
+      this.accountObjects.push(provider);
+      this.payment.account_object_code = provider.account_object_code;
+      this.payment.account_object_name = provider.account_object_name
+      this.payment.account_object_contact_name = provider.account_object_name;
+      this.payment.journal_memo = `Chi tiền cho ${provider.account_object_name}`;
+      this.payment.account_object_address = provider.address;
+      this.payment.account_object_id = provider.account_object_id;
     }
   }
 }

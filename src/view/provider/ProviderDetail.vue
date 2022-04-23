@@ -732,15 +732,15 @@ export default {
       this.provider.bank_info = JSON.stringify(this.account_object_bank_account);
       this.provider.is_vendor = true;
       if (this.formMode === Enum.FormMode.Create) {
-        let response = this.createAccountObject(this.provider);
-        let data = response.data;
+        let response = await this.createAccountObject(this.provider);
         // Xử lý khi có thông tin trả về
-        if (data.statusCode === Enum.StatusCode.Created) { // Thành công
+        if (response.data.statusCode === Enum.StatusCode.Created) { // Thành công
           this.showToastMsg({title: Resource.Employee.Success_created, type: Enum.ToastType.Success})
-          this.closeModal();
+          this.$emit("created", response.data.data);
           this.$emit("handleLoadData");
-        } else if (data.statusCode === Enum.StatusCode.BadRequest) { // Trùng số tài khoản
-          let errorData = data.data;
+          this.closeModal();
+        } else if (response.data.statusCode === Enum.StatusCode.BadRequest) { // Trùng số tài khoản
+          let errorData = response.data.data;
           let keys = Object.keys(errorData);
           let errorMsg = errorData[keys[0]];
           this.openPopup(Enum.DialogCode.Warning, errorMsg);
@@ -748,13 +748,20 @@ export default {
           console.log(response);
         }
       } else {
-        await this.updateAccountObject(this.provider);
-        this.showToastMsg({
-          title: format(Resource.Employee.Success_updated, "nhà cung cấp "),
-          type: Enum.ToastType.Success
-        })
-        this.closeModal();
-        this.$emit("handleLoadData");
+        let response = await this.updateAccountObject(this.provider);
+        if (response.data.statusCode === Enum.StatusCode.OK) { // Thành công
+          this.showToastMsg({
+            title: format(Resource.Employee.Success_updated, "nhà cung cấp "),
+            type: Enum.ToastType.Success
+          })
+          this.closeModal();
+          this.$emit("handleLoadData");
+        } else {
+          let errorData = response.data.data;
+          let keys = Object.keys(errorData);
+          let errorMsg = errorData[keys[0]];
+          this.openPopup(Enum.DialogCode.Warning, errorMsg);
+        }
       }
     },
 

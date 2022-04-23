@@ -66,7 +66,7 @@ const actions = {
      * @since 27/02/2022
      * @author Nguyễn Văn Linh
      */
-    async getEmployeesPaging({commit}, {pageSize = 10, pageNumber = 1, txtSearch = ""}) {
+    async getEmployeesPaging({commit}, {pageSize = 20, pageNumber = 1, txtSearch = ""}) {
         try {
             const response = await axios.get(
                 `${LOCAL_API_URL}/Employees/filter?pageSize=${pageSize}&pageNumber=${pageNumber}&txtSearch=${txtSearch}`

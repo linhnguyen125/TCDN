@@ -4,18 +4,25 @@ import {LOCAL_API_URL} from "../../../public/config";
 
 const state = {
     payments: null,
+    newPaymentCode: null,
 };
 
 const getters = {
     payments: (state) => {
         return state.payments;
     },
+    newPaymentCode: (state) => {
+        return state.newPaymentCode;
+    }
 };
 
 const mutations = {
     setPayments(state, payments) {
         state.payments = payments;
     },
+    setNewPaymentCode(state, newCode) {
+        state.newPaymentCode = newCode;
+    }
 };
 
 const actions = {
@@ -52,7 +59,7 @@ const actions = {
         loading.show();
         try {
             const response = await axios
-                .post(`${LOCAL_API_URL}/CaPayments`, payment);
+                .post(`${LOCAL_API_URL}/CaPayments/full`, payment);
             loading.hide();
             return response;
         } catch (error) {
@@ -64,26 +71,25 @@ const actions = {
     /**
      * Gọi api xóa ncc
      * @param commit
-     * @param employee
+     * @param payment
      * @returns {Promise<AxiosResponse<any>|any>}
      * @since 27/02/2022
      * @author Nguyễn Văn Linh
      */
-    // async deleteAccountObject({commit}, vendor) {
-    //     // Hiển thị loading
-    //     loading.show();
-    //     try {
-    //         const response = await axios.delete(
-    //             `${LOCAL_API_URL}/AccountObjects/${vendor.account_object_id}`
-    //         );
-    //         commit("deleted", vendor.account_object_id);
-    //         loading.hide();
-    //         return response;
-    //     } catch (error) {
-    //         loading.hide();
-    //         return error.response;
-    //     }
-    // },
+    async deletePayment({commit}, payment) {
+        // Hiển thị loading
+        loading.show();
+        try {
+            const response = await axios.delete(
+                `${LOCAL_API_URL}/CaPayments/${payment.ca_payment_id}`
+            );
+            loading.hide();
+            return response;
+        } catch (error) {
+            loading.hide();
+            return error.response;
+        }
+    },
 
     /**
      * Gọi api cập nhập ncc
@@ -97,7 +103,7 @@ const actions = {
         // Hiển thị loading
         loading.show();
         try {
-            const response = await axios.put(`${LOCAL_API_URL}/CaPayments`, payment);
+            const response = await axios.put(`${LOCAL_API_URL}/CaPayments/full`, payment);
             loading.hide();
             return response;
         } catch (error) {
@@ -114,19 +120,38 @@ const actions = {
      * @since 14/03/2022
      * @author Nguyễn Văn Linh
      */
-    // async deleteAccountObjects({commit}, arrIds) {
-    //     loading.show();
-    //     try {
-    //         const response = await axios.delete(
-    //             `${LOCAL_API_URL}/AccountObjects`, {data: arrIds}
-    //         );
-    //         loading.hide();
-    //         return response;
-    //     } catch (error) {
-    //         loading.hide();
-    //         return error.response;
-    //     }
-    // },
+    async deletePayments({commit}, arrIds) {
+        loading.show();
+        try {
+            const response = await axios.delete(
+                `${LOCAL_API_URL}/CaPayments`, {data: arrIds}
+            );
+            loading.hide();
+            return response;
+        } catch (error) {
+            loading.hide();
+            return error.response;
+        }
+    },
+
+    /**
+     * Gọi api lấy mã mới
+     * @param commit
+     * @returns {Promise<AxiosResponse<any>|any>}
+     * @since 14/03/2022
+     * @author Nguyễn Văn Linh
+     */
+    async getNewPaymentCode({commit}) {
+        loading.show();
+        try {
+            const response = await axios.get(`${LOCAL_API_URL}/CaPayments/newPaymentCode`);
+            loading.hide();
+            commit("setNewPaymentCode", response.data);
+        } catch (error) {
+            loading.hide();
+            return error.response;
+        }
+    },
 };
 
 export default {

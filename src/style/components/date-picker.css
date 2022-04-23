@@ -37,3 +37,7 @@ m-input .active {
     border-color: #2ca01c !important;
     color: #2ca01c !important;
 }
+
+.mx-datepicker.disabled .mx-input-wrapper input {
+    cursor: default !important;
+}

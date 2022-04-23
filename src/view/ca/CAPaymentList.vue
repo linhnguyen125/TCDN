@@ -94,7 +94,8 @@
           :body-data="bodyData"
           :isLoading="isLoading"
           :page-size="pageSize"
-          @handleOpenModalUpdate="openModal"
+          :view="true"
+          @handleOpenModalView="openModal"
           @handleShowFunc="showFunc"
           @handleChangeArrIds="onChangeArrIds"
       ></ms-table-v2>
@@ -129,15 +130,14 @@
   <payment-drop-down ref="payment-drop-down">
     <template v-slot:default>
       <div @click="this.$refs['payment-detail'].openModal({data: payment, formMode: 5})">Xem</div>
-      <div>Sửa</div>
+      <div>Ghi sổ</div>
+      <div @click="onDeletePayment">Xóa</div>
       <div @click="copy">Nhân bản</div>
-      <div @click="onDelete">Xóa</div>
-      <div>Ngừng sử dụng</div>
     </template>
   </payment-drop-down>
 
   <ms-dialog ref="dialog" :option="popupOption" @handleConfirm="confirm"></ms-dialog>
-  <payment-detail ref="payment-detail"></payment-detail>
+  <payment-detail ref="payment-detail" @loadData="loadData"></payment-detail>
 
   <div id="toast"></div>
 </template>
@@ -239,7 +239,6 @@ export default {
 
     showMultiDelete() {
       return this.arrIds.length >= 1;
-
     }
   },
   watch: {
@@ -255,11 +254,12 @@ export default {
       this.loadData();
     },
     arrIds() {
+      console.log(this.arrIds)
       this.showListAction = false;
     },
   },
   methods: {
-    ...mapActions(["getPaymentsPaging", "getLayout", "deleteAccountObject", "deleteAccountObjects"]),
+    ...mapActions(["getPaymentsPaging", "getLayout", "deletePayment", "deletePayments"]),
 
     /**
      * Hàm load lại dữ liệu
@@ -360,7 +360,7 @@ export default {
     onChangeArrIds(arrIds) {
       this.arrIds = [];
       arrIds.forEach(item => {
-        this.arrIds.push(item.account_object_id);
+        this.arrIds.push(item.ca_payment_id);
       })
     },
 
@@ -376,7 +376,7 @@ export default {
     },
 
     /**
-     * Show dialog xóa ncc
+     * Show dialog xóa payment
      * @since 27/02/2022
      * @author NVLINH
      */
@@ -406,18 +406,18 @@ export default {
       if (confirmation === true) {
         switch (this.formMode) {
           case Enum.FormMode.Delete:
-            await this.deleteAccountObject(this.payment);
+            await this.deletePayment(this.payment);
             // Xử lý khi có thông tin trả về
             this.showToastMsg({
               title: format(Resource.Employee.Success_deleted, "phiếu chi "),
               type: Enum.ToastType.Success
             })
-            this.$refs["provider-drop-down"].hide();
+            this.$refs["payment-drop-down"].hide();
             this.$refs["dialog"].closeDialog();
             await this.loadData();
             break;
           case Enum.FormMode.MultiDelete:
-            await this.deleteAccountObjects(this.arrIds);
+            await this.deletePayments(this.arrIds);
             this.showToastMsg({
               title: format(Resource.Employee.Success_deleted, "phiếu chi "),
               type: Enum.ToastType.Success
@@ -427,6 +427,15 @@ export default {
             break;
         }
       }
+    },
+
+    /**
+     * Mở form chi tiết
+     * @since 23/04/2022
+     * @author NVLINH
+     */
+    openModal({data, formMode}) {
+      this.$refs['payment-detail'].openModal({data, formMode});
     },
 
     /**

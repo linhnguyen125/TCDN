@@ -50,7 +50,9 @@ const payment_display = [
         header: "account_header",
         label: "account_number",
         value: "account_number",
-        type: 3
+        type: 3,
+        required: true,
+        errorTitle: "Tài khoản nợ không được để trống"
     },
     {
         key: 'credit_account',
@@ -61,9 +63,20 @@ const payment_display = [
         header: "account_header",
         label: "account_number",
         value: "account_number",
-        type: 3
+        type: 3,
+        required: true,
+        errorTitle: "Tài khoản có không được để trống"
     },
-    {key: 'amount_oc', name: 'Số tiền', col_width: 150, isShow: true, type: 0, objectType: 'number'},
+    {
+        key: 'amount_oc',
+        name: 'Số tiền',
+        col_width: 150,
+        isShow: true,
+        type: 0,
+        objectType: 'number',
+        required: true,
+        errorTitle: "Số tiền không được để trống"
+    },
     {key: 'amount', name: 'Quy đổi', col_width: 107, isShow: false, type: 1},
     {key: 'cash_out_exchange_rate_finance', name: 'Tỷ giá xuất quỹ', col_width: 150, isShow: false, type: 1},
     {key: 'cash_out_amount_finance', name: 'Quy đổi theo TGXQ', col_width: 149, isShow: false, type: 1},

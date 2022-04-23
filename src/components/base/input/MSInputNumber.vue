@@ -8,9 +8,10 @@
             class="text-align-right"
             :value="modelValue"
             @input="onInputNumber($event)"
-            v-bind:class="{invalid: isError,}"
+            :disabled="disabled"
             :placeholder="placeholder"
             @change="$emit('onChange', modelValue)"
+            @blur="onBlur"
         />
       </div>
     </div>
@@ -21,6 +22,12 @@
 export default {
   name: "MSInputNumber",
   emits: ["update:modelValue"],
+  mounted() {
+    this.$refs.input.value = Intl.NumberFormat("vi-VN", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 4,
+    }).format(this.modelValue);
+  },
   data() {
     return {};
   },
@@ -45,17 +52,31 @@ export default {
       type: String,
       default: "",
     },
-    //thêm class lỗi nếu lỗi
-    isError: {
+    //quy định disabled cho input
+    disabled: {
       type: Boolean,
-      default: false,
+      default: false
     },
+    errorClass: {
+      type: String,
+      default: "invalid"
+    },
+    errorTitle: {
+      type: String,
+      default: ""
+    },
+    required: {
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
-    /**-----------------------------------------------------------
+    /**
      * Hàm thực hiện format định dạng số ngay trong khi nhập liệu.
-     * Author: quyetkaito (27/03/2022).
-     -----------------------------------*/
+     * @param event
+     * @since 18/04/2022
+     * @author NVLINH
+     */
     onInputNumber(event) {
       //gọi hàm format định dạng số ngay khi nhập liệu từ base
       this.onNumberInput(event);
@@ -63,39 +84,40 @@ export default {
       //cập nhật lại vào value
       this.$emit("update:modelValue", event.target.value);
     },
-    /**--------------------------------
-     * Hàm dùng để focus vào input.
-     * Author: quyetkaito (03/03/2022)
-     ----------------------------------*/
+
     focus: function () {
+      this.$refs.input.classList.remove(this.errorClass);
       this.$refs.input.focus();
     },
-    /**------------------------------------
-     * Hàm dùng để thêm css lỗi cho input.
-     * Author: quyetkaito (03/03/2022)
-     --------------------------------------*/
+
+    /**
+     * Hàm thêm css lỗi cho input
+     * @since 18/04/2022
+     * @author NVLINH
+     */
     addError: function () {
-      this.$refs.input.classList.add("error");
-      this.$refs.input.setAttribute(
-          "title",
-          `${this.labelText} không được bỏ trống`
-      );
-    },
-    /**--------------------------
-     * Hàm thêm border đỏ cho input
-     * Author: quyetkaito (20/03/2022)
-     -------------------------*/
-    addRedBorder: function () {
-      this.$refs.input.classList.add("error");
+      this.$refs.input.classList.add(this.errorClass);
+      this.$refs.input.setAttribute("title", this.errorTitle);
     },
 
-    /**------------------------------------
-     * Hàm dùng để bỏ css lỗi cho input.
-     * Author: quyetkaito (03/03/2022)
-     --------------------------------------*/
-    removeError: function () {
-      this.$refs.input.classList.remove("error");
+    /**
+     * Hàm clear css lỗi cho input
+     * @since 18/04/2022
+     * @author NVLINH
+     */
+    clearError: function () {
+      this.$refs.input.classList.remove(this.errorClass);
       this.$refs.input.setAttribute("title", "");
+    },
+
+    onBlur() {
+      if (this.required === true) {
+        if (this.modelValue == 0) {
+          this.addError();
+        } else {
+          this.clearError();
+        }
+      }
     },
 
     onNumberInput(event) {
@@ -105,7 +127,6 @@ export default {
         if (event.data === ",") {
           //nếu người dùng nhập dấu ',' và không có dấu ',' nào đã tồn tại => đang nhập số thập phân
           if ((value.match(/,/g) || []).length <= 1) {
-            console.log("chưa phải số thập phân");
             return; //cho nhập liệu tiếp
           }
         }
@@ -116,12 +137,13 @@ export default {
       }
     },
 
-    /**--------------------------------------
+    /**
      * Hàm format định dạng tiền tệ Việt Nam. => 123.123.123,4869
-     * @param {String} money dạng chuỗi, có thể chứa cả dấu chấm dấu phẩy, ký tự chữ
-     * @returns: kết quả dạng String.
-     * Author: quyetkaito (27/03/2022)
-     ----------------------------------------*/
+     * @param money
+     * @returns {string}
+     * @since 18/04/2022
+     * @author NVLINH
+     */
     formatCurrency(money) {
       try {
         let moneyFormatted;

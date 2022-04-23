@@ -13,15 +13,18 @@
             :value="selectedText"
             :placeholder="placeholder"
             class="m-input m-cbx-input"
+            :title="errorTitle"
+            :disabled="disabled"
+            @blur="onBlur"
             @focus="onFocus"
             @input="lodashDelay($event.target.value)"
         />
       </div>
-      <div v-if="addItem" class="m-combobox-button add">
+      <div v-if="addItem" :class="['m-combobox-button add', {'bg-inherit': disabled === true}]">
         <slot></slot>
       </div>
       <div
-          class="m-combobox-button flex align-center"
+          :class="['m-combobox-button flex align-center', {'bg-inherit': disabled === true}]"
           @click="toggleOptions($event)"
       >
         <div ref="arrow" class="m-icon h-8 w-8 m-arrow-dropdown cursor-pointer"></div>
@@ -34,6 +37,7 @@
           ref="dropDownContent"
           class="m-combobox-content"
           :class="{ 'append-body': appendToBody }"
+          @scroll="lazyLoad"
       >
         <ms-table
             ref="table"
@@ -80,16 +84,6 @@ export default {
     addItem: {
       type: Boolean,
       default: false
-    },
-    //label của dropdown là gì
-    labelText: {
-      type: String,
-      default: "",
-    },
-    //có dấu * thể hiện trường bắt buộc không?
-    isRequire: {
-      type: Boolean,
-      default: false,
     },
     //input này có được nhập vào không?
     searchable: {
@@ -140,9 +134,33 @@ export default {
       type: Boolean,
       default: false,
     },
+    // tên của combobox
     cbxName: {
       type: String,
       default: ""
+    },
+    // disabled
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    //content có lazy loading hay khong?
+    lazyLoading: {
+      type: Boolean,
+      default: false,
+    },
+    //class cho combobox
+    errorClass: {
+      type: String,
+      default: "invalid"
+    },
+    errorTitle: {
+      type: String,
+      default: ""
+    },
+    required: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -151,6 +169,7 @@ export default {
       selectedText: "",
       myOptions: [],
       showCombobox: false,
+      valid: true,
     };
   },
   created() {
@@ -161,7 +180,9 @@ export default {
     if (this.modelValue) {
       try {
         //tìm kiếm trong danh sách option
-        let option = this.options.filter(item => item[this.value] === this.modelValue);
+        let option = this.options.filter(item => item[this.value] === this.modelValue
+            || item[this.label] === this.modelValue
+            || item[this.cbxName] === this.modelValue);
         //gán text vào ô input
         this.selectedText = option[0][this.label];
         //css cho nó được chọn.
@@ -190,160 +211,181 @@ export default {
           //log ra lỗi
           console.log(error);
         }
-      } else {
-        this.selectedText = "";
       }
     },
+    // valid(value) {
+    //   this.$emit("eValid", value, this.cbxName);
+    // }
   },
   methods: {
-    /**---------------------------------
-     * Hàm xử lý ẩn/hiện dropdown content.
-     * Author: quyetkaito (22/02/2022)
-     -----------------------------------*/
+    /**
+     * Hàm xử lý ẩn hiện dropdown
+     * @param event
+     * @since 18/04/2022
+     * @author NVLINH
+     */
     toggleOptions(event) {
-      //focus vào input
-      this.focus();
-      //toggle hiện combobox
-      this.showCombobox = !this.showCombobox;
-      //show content
-      // this.$refs.dropDownContent.classList.toggle("show");
-      //xoay 180 độ mũi tên
-      this.$refs.arrow.classList.toggle("rotation-180");
-      //độ cao dropdown
-      let dropdownHeight = this.$refs.dropDownContent.clientHeight;
-      //độ cao hiện tại của màn hình
-      let viewHeight = event.view.innerHeight;
+      if (this.disabled !== true) {
+        //focus vào input
+        this.focus();
+        //toggle hiện combobox
+        this.showCombobox = !this.showCombobox;
+        //show content
+        // this.$refs.dropDownContent.classList.toggle("show");
+        //xoay 180 độ mũi tên
+        this.$refs.arrow.classList.toggle("rotation-180");
+        //độ cao dropdown
+        let dropdownHeight = this.$refs.dropDownContent.clientHeight;
+        //độ cao hiện tại của màn hình
+        let viewHeight = event.view.innerHeight;
 
-      //nếu không phải append to body
-      if (!this.appendToBody) {
-        //vị trí chuột y
-        let clientY = event.clientY;
-        let top = 33;
-        if (this.isHasLabel)
-          top = 53;
-        if (viewHeight < clientY + dropdownHeight) {
+        //nếu không phải append to body
+        if (!this.appendToBody) {
+          //vị trí chuột y
+          let clientY = event.clientY;
+          let top = 33;
           if (this.isHasLabel)
-            top = 0 - dropdownHeight + 16; //nếu có label thì cộng thêm 16
-          else
-            top = 0 - dropdownHeight - 2;
+            top = 53;
+          if (viewHeight < clientY + dropdownHeight) {
+            if (this.isHasLabel)
+              top = 0 - dropdownHeight + 16; //nếu có label thì cộng thêm 16
+            else
+              top = 0 - dropdownHeight - 2;
+          }
+          this.$refs.dropDownContent.style.top = top + "px";
+        } else { //nếu là append to body
+          //lấy vị trí của input trên màn hình
+          let inputPosition = this.$refs.input.getBoundingClientRect();
+          let inputX = inputPosition.x;
+          let inputTop = inputPosition.top;
+          let inputHeight = inputPosition.height;
+          let inputWidth = inputPosition.width;
+          //nếu độ cao hiện tại của màn hình trừ cho inputTop < dropdownheight => cho lên trên
+          if (viewHeight - inputTop < dropdownHeight) {
+            this.$refs.dropDownContent.style.top = inputTop - dropdownHeight - 5 + "px";
+          } else {
+            this.$refs.dropDownContent.style.top = inputTop + inputHeight + "px";
+          }
+          //style vị trí cho dropdown
+          this.$refs.dropDownContent.style.left = inputX + "px";
+          // this.$refs.dropDownContent.style.minWidth = inputWidth + "px";
+          this.$refs.dropDownContent.style.width = "fit-content";
         }
-        this.$refs.dropDownContent.style.top = top + "px";
-      } else { //nếu là append to body
-        //lấy vị trí của input trên màn hình
-        let inputPosition = this.$refs.input.getBoundingClientRect();
-        let inputX = inputPosition.x;
-        let inputTop = inputPosition.top;
-        let inputHeight = inputPosition.height;
-        let inputWidth = inputPosition.width;
-        //nếu độ cao hiện tại của màn hình trừ cho inputTop < dropdownheight => cho lên trên
-        if (viewHeight - inputTop < dropdownHeight) {
-          this.$refs.dropDownContent.style.top = inputTop - dropdownHeight - 5 + "px";
-        } else {
-          this.$refs.dropDownContent.style.top = inputTop + inputHeight + "px";
-        }
-        //style vị trí cho dropdown
-        this.$refs.dropDownContent.style.left = inputX + "px";
-        // this.$refs.dropDownContent.style.minWidth = inputWidth + "px";
-        this.$refs.dropDownContent.style.width = "fit-content";
       }
-    }
-    ,
-    /**------------------------------------
-     * Hàm xử lý ẩn dropdown content.
-     * Author: quyetkaito (13/03/2022)
-     -------------------------------------*/
+      return;
+    },
+
+    /**
+     * Hàm xử lý ẩn dropdown
+     * @since 18/04/2022
+     * @author NVLINH
+     */
     hideOptions() {
       // this.$refs.dropDownContent.classList.remove("show");
       this.showCombobox = false;
       this.$refs.arrow.classList.remove("rotation-180");
-    }
-    ,
-    /**------------------------------------------
-     *Focus vào ô input
-     *Author: quyetkaito (14/04/2022)
-     --------------------------------------------*/
+    },
+
+
+    /**
+     * focus vào ô input
+     */
     onFocus() {
       this.focus();
-    }
-    ,
-    /**-------------------------------------
-     * Thực hiện delay khi tìm kiếm.
-     * Author: quyetkaito (15/03/2022)
-     ---------------------------------*/
+    },
+
+    /**
+     * Hàm thực  hiện tìm kiếm (auto complete)
+     * @since 18/04/2022
+     * @author NVLINH
+     */
     lodashDelay: _.debounce(function (value) {
-      this.load(value);
-    }, 500),
-    /**------------------------------------------
-     *Hàm tìm kiếm lựa chọn trong combobox
-     *@param {String} value - giá trị tìm kiếm.
-     *Author: quyetkaito (14/04/2022)
-     --------------------------------------------*/
-    load(value) {
-      //emit tới cha gọi api tìm kiếm nếu combobox nhiều data
-      //tìm kiếm luôn tại client
       this.selectedText = value;
-      this.myOptions = this.options.filter(item => item[this.label].toLowerCase().includes(value.toLowerCase()) || item[this.value].toLowerCase().includes(value.toLowerCase()));
-      console.log("myOption", this.myOptions);
-    }
-    ,
-    /**--------------------------------
-     * Hàm dùng để focus vào input.
-     * Author: quyetkaito (03/03/2022)
-     ----------------------------------*/
+      // this.showCombobox = true;
+      this.$emit("handleLoadNext", this.cbxName, value);
+    }, 500),
+
+    /**
+     * focus vào ô input
+     */
     focus: function () {
       this.$refs.input.focus();
-    }
-    ,
-    /**------------------------------------
-     * Hàm dùng để thêm css lỗi cho input.
-     * Author: quyetkaito (03/03/2022)
-     --------------------------------------*/
+    },
+
+    /**
+     * Hàm thêm css lỗi cho input
+     * @since 18/04/2022
+     * @author NVLINH
+     */
     addError: function () {
-      this.$refs.input.classList.add("error");
-      this.$refs.input.setAttribute(
-          "title",
-          `${this.labelText} không được bỏ trống`
-      );
-    }
-    ,
-    /**------------------------------------
-     * Hàm dùng để bỏ css lỗi cho input.
-     * Author: quyetkaito (03/03/2022)
-     --------------------------------------*/
-    removeError: function () {
-      this.$refs.input.classList.remove("error");
+      this.$refs.input.classList.add(this.errorClass);
+      this.$refs.input.setAttribute("title", this.errorTitle);
+    },
+
+    /**
+     * Hàm clear css lỗi cho input
+     * @since 18/04/2022
+     * @author NVLINH
+     */
+    clearError: function () {
+      this.$refs.input.classList.remove(this.errorClass);
       this.$refs.input.setAttribute("title", "");
-    }
-    ,
-    /**-------------------------------
-     * Hàm lấy ra label của input.
-     * Author: quyetkaito (03/03/2022)
-     ---------------------------------*/
-    getLabel: function () {
-      return this.labelText;
-    }
-    ,
-    /**------------------------------------------
-     *Hàm lấy object được chọn từ dropdown dạng bảng
-     *@param {Object} object - 1 hàng của dropdown dạng bảng(nhận được từ ms-grid)
-     *Author: quyetkaito (13/04/2022)
-     --------------------------------------------*/
+    },
+
+    onBlur() {
+      if (this.required === true) {
+        if (this.modelValue === "") {
+          this.valid = false;
+          this.addError();
+        } else {
+          console.log(this.modelValue)
+          this.valid = true;
+          this.clearError();
+        }
+      }
+    },
+
+    /**
+     * hàm lấy object được chọn từ dropdown
+     * @param object
+     * @since 18/04/2022
+     * @author NVLINH
+     */
     getOption(object) {
       //gán giá trị mong muốn vào value, label
-      this.selectedText = object[this.label]; //giá trị vào ô input (VD:DepartmentName)
-      this.dropdownValue = object[this.value]; //giá trị của dropdown (VD:id của đối tượng: DepartmentID)
+      this.selectedText = object[this.label];
+      this.dropdownValue = object[this.value];
       //emit tới cha value của option
       this.$emit("update:modelValue", this.dropdownValue);
-      //ẩn dropdown sau khi select
-      // this.hideOptions();
-    }
-    ,
-  }
-  ,
-  computed: {}
-  ,
-}
-;
+      this.clearError();
+      this.valid = true;
+    },
+
+    /**
+     * Lazy loading cho dropdown
+     * @since 18/04/2022
+     * @author NVLINH
+     */
+    lazyLoad() {
+      if (this.lazyLoading) {
+        //độ cao dropdown
+        let dropdownHeight = this.$refs.dropDownContent.clientHeight;
+        let scrollTop = this.$refs.dropDownContent.scrollTop;
+        //toàn bộ độ cao có thể scroll
+        let scrollHeight = this.$refs.dropDownContent.scrollHeight;
+        //vị trí hiện tại của con lăn
+        let total = dropdownHeight + Math.floor(scrollTop);
+        //nếu bằng scrollHeight thì là đang ở bottom
+        if (total === scrollHeight) {
+          total = 0;
+          //emit tới cha load tiếp thông tin
+          this.$emit("handleLoadNext", this.cbxName, this.selectedText);
+        }
+      }
+    },
+  },
+  computed: {},
+};
 </script>
 
 <style>

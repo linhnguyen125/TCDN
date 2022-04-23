@@ -25,7 +25,7 @@
             <th v-if="deleteFunction === true" class="w-index text-align-center z-3"></th>
           </tr>
           </thead>
-          <tbody v-if="formMode !== 5" class="dis-contents">
+          <tbody v-if="disabled !== true" class="dis-contents">
           <tr v-for="(data, index) in this.bodyData" :key="index" @click="selectRow(index)">
             <td v-if="colIndex === true" class="w-index text-align-center z-3">{{ index + 1 }}</td>
             <td v-for="(thead, col) in headerData" :key="col"
@@ -42,7 +42,12 @@
                             v-model="data[thead.key]"
                             :disabled="rowSelected !== index"
                             :name="`${thead.key}`">
-                        <ms-input-number v-else v-model="data[thead.key]" @onChange="onChange"></ms-input-number>
+                        <ms-input-number
+                            v-else
+                            v-model="data[thead.key]" :required="thead.required"
+                            :error-title="thead.errorTitle"
+                            @onChange="onChange"
+                        ></ms-input-number>
                       </div>
                       <label v-if="thead.type === typeOfTableEditor.CheckBox" class="m-checkbox pl-0">
                         <input
@@ -56,6 +61,7 @@
                       </label>
                       <span v-if="thead.type === typeOfTableEditor.Text">{{ data[thead.key] }}</span>
                       <ms-combobox
+                          :ref="thead.key + index"
                           v-if="thead.type === typeOfTableEditor.Combobox"
                           :options="data[thead.data]"
                           v-model="data[thead.key]"
@@ -64,6 +70,10 @@
                           :add-item="false"
                           :list-header="data[thead.header]"
                           :cbx-name="thead.key"
+                          :lazy-loading="true"
+                          :required="thead.required"
+                          :error-title="thead.errorTitle"
+                          @handleLoadNext="loadNext"
                           @changeModelValue="changeModelValue"
                           :label="thead.label"
                           :value="thead.value">
@@ -90,8 +100,9 @@
                 <div class="flex align-item-center flex-1">
                   <div :class="['h-32 w-full', thead.class]">
                     <div class="m-input flex align-item-center">
-                      <input :class="['m-input', {'text-align-right': thead.objectType === 'number'}]"
+                      <input v-if="thead.objectType !== 'number'" class="m-input"
                              disabled="disabled" :value="data[thead.key]">
+                      <ms-input-number v-else v-model="data[thead.key]" :disabled="disabled"></ms-input-number>
                     </div>
                   </div>
                 </div>
@@ -108,7 +119,7 @@
           <tr>
             <th></th>
             <th v-for="(thead, col) in headerData" :key="col" :class="{'text-align-right': thead.key === 'amount_oc'}">
-              <span v-if="thead.key === 'amount_oc'">{{ Intl.NumberFormat().format(totalAmount) }}</span>
+              <span v-if="thead.key === 'amount_oc'">{{ Intl.NumberFormat("vi-VN").format(total) }}</span>
             </th>
             <th></th>
           </tr>
@@ -149,6 +160,7 @@ import {formatCurrencyToSave} from '@/lib/number-format';
 import Enum from "@/script/enum";
 import MSCombobox from "@/components/base/v2/MSCombobox";
 import MSInputNumber from "@/components/base/input/MSInputNumber";
+import {isString} from "lodash";
 
 export default {
   name: "MSTableEditor",
@@ -159,17 +171,12 @@ export default {
       typeOfTableEditor: Enum.TypeOfTableEditor,
       rowSelected: 0,
       customTemplate: [],
-      totalAmount: 0,
     }
   },
   created() {
     // khi mở form phải tích chọn những cột người dùng đã chọn
     this.columns = this.bodyData.filter(item => item["isShow"] === true);
-    // Tính tổng tiền
-    this.bodyData.forEach(item => {
-      this.totalAmount += Number(item.amount_oc);
-    })
-    if (isNaN(this.totalAmount)) this.totalAmount = 0;
+    console.log(this.headerData)
   },
   computed: {
     ...mapGetters(["layout"]),
@@ -194,23 +201,28 @@ export default {
     "MsInputNumber": MSInputNumber,
   },
   props: {
+    //hiển thị chức năng thêm xóa dòng
     control: {
       type: Boolean,
       default: false
     },
+    // hiển thị file update
     fileUpload: {
       type: Boolean,
       default: false
     },
+    // list header hiển thị ra màn hình
     headerData: {
       type: Object,
       default: () => {
       }
     },
+    // data cho table
     bodyData: {
       type: Array,
       default: () => []
     },
+    // tên obj của table
     objectName: {
       type: String,
       default: "bank"
@@ -219,21 +231,29 @@ export default {
       type: Boolean,
       default: true
     },
+    // cột tích chọn
     colIndex: {
       type: Boolean,
       default: false
     },
+    // cột chức năng xóa dòng
     deleteFunction: {
       type: Boolean,
       default: true
     },
+    // footer của table
     showFooter: {
       type: Boolean,
       default: false
     },
-    formMode: {
+    // disabled
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    total: {
       type: Number,
-      default: 1,
+      default: 0
     }
   },
   watch: {
@@ -248,7 +268,7 @@ export default {
      * @author NVLINH
      */
     addRow() {
-      if (this.formMode !== 5) {
+      if (this.disabled !== true) {
         this.$emit("handleAddRow", this.objectName);
       }
     },
@@ -260,7 +280,7 @@ export default {
      */
     deleteAllRow() {
       // gán lại dòng được chọn = 0
-      if (this.formMode !== 5) {
+      if (this.disabled !== true) {
         this.rowSelected = 0;
         this.$emit("handleDeleteAllRow", this.objectName);
       }
@@ -283,7 +303,7 @@ export default {
      * @author NVLINH
      */
     deleteRow(row) {
-      if (this.formMode !== 5) {
+      if (this.disabled !== true) {
         this.$emit("handleDeleteRow", row, this.objectName);
       }
     },
@@ -295,9 +315,7 @@ export default {
      * @author NVLINH
      */
     onChange(amount_oc) {
-      let amount = formatCurrencyToSave(amount_oc);
-      this.totalAmount += amount;
-      this.$emit('changeAmount', amount)
+      this.$emit('changeAmount')
     },
 
     /**
@@ -321,59 +339,9 @@ export default {
       this.$emit("changeObject", value, this.rowSelected, cbxName);
     },
 
-    /**
-     * Hàm custom combobox position
-     * @param dropdownList
-     * @param component
-     * @param width
-     * @returns {function(): void}
-     */
-    withPopper(dropdownList, component, {width}) {
-      /**
-       * We need to explicitly define the dropdown width since
-       * it is usually inherited from the parent with CSS.
-       */
-      dropdownList.style.width = 140 + 'px'
-
-      /**
-       * Here we position the dropdownList relative to the $refs.toggle Element.
-       *
-       * The 'offset' modifier aligns the dropdown so that the $refs.toggle and
-       * the dropdownList overlap by 1 pixel.
-       *
-       * The 'toggleClass' modifier adds a 'drop-up' class to the Vue Select
-       * wrapper so that we can set some styles for when the dropdown is placed
-       * above.
-       */
-      const popper = createPopper(component.$refs.toggle, dropdownList, {
-        placement: 'top',
-        modifiers: [
-          {
-            name: 'offset',
-            options: {
-              offset: [0, -1],
-            },
-          },
-          {
-            name: 'toggleClass',
-            enabled: true,
-            phase: 'write',
-            fn({state}) {
-              component.$el.classList.toggle(
-                  'drop-up',
-                  state.placement === 'top'
-              )
-            },
-          },
-        ],
-      })
-
-      /**
-       * To prevent memory leaks Popper needs to be destroyed.
-       * If you return function, it will be called just before dropdown is removed from DOM.
-       */
-      return () => popper.destroy()
-    },
+    addErrorCbx(refName) {
+      this.$refs[refName][0].addError();
+    }
   }
 }
 </script>

@@ -29,7 +29,7 @@ export default {
   },
   data() {
     return {
-      number: null,
+      number: 123456,
       dropdownValue: "123456",
       options2: [
         {

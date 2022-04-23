@@ -30,10 +30,10 @@
     >
       <td v-if="colIndex === true" class="sticky l-0">
         <label
-            :for="`employee-${index}`"
+            :for="`ckb-${index}`"
             class="m-checkbox absolute pos-center"
         >
-          <input type="checkbox" :id="`employee-${index}`" v-model="arrIds" :value="data"/>
+          <input type="checkbox" :id="`ckb-${index}`" v-model="arrIds" :value="data"/>
           <span class="m-check-border"></span>
           <span class="m-check-mark"></span>
         </label>
@@ -45,7 +45,8 @@
       </td>
       <td v-if="showFunction === true" class="sticky r-0">
         <div class="func">
-          <button @click="onUpdate(data, formMode.Update)">Sửa</button>
+          <button v-if="view === false" @click="onUpdate(data, formMode.Update)">Sửa</button>
+          <button v-else @click="onView(data, formMode.View)">Xem</button>
           <div
               class="edit-icon m-icon m-icon-edit"
               @click="showFunc($event, data)"
@@ -133,6 +134,10 @@ export default {
     pageSize: {
       type: Number,
       default: 10,
+    },
+    view: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -178,7 +183,10 @@ export default {
         return format.format('DD/MM/YYYY');
       }
       if (data !== null && (key === "total_amount" || key === "document_included")) {
-        return Intl.NumberFormat().format(data);
+        return Intl.NumberFormat("vi-VN", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 4,
+        }).format(data);
       }
       return data;
     },
@@ -192,6 +200,17 @@ export default {
      */
     onUpdate(data, formMode) {
       this.$emit("handleOpenModalUpdate", {data, formMode});
+    },
+
+    /**
+     * Emit ra component cha mở form view chi tiết
+     * @param data - object
+     * @param formMode
+     * @since 05/03/2022
+     * @author Nguyễn Văn Linh
+     */
+    onView(data, formMode) {
+      this.$emit("handleOpenModalView", {data, formMode});
     },
 
     /**
