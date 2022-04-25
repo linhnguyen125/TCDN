@@ -190,6 +190,14 @@ const pay_account = [
     },
 ]
 
+const account_object_group_id = [
+    {label: "MISA JSC", value: "misajsc"},
+    {label: "Thang Long", value: "thanglong"},
+    {label: "Hung Thinh", value: "hungthinh"},
+    {label: "Hello", value: "hello"},
+    {label: "VinGroup", value: "vingroup"},
+]
+
 export {
     payment_term_header,
     payment_term,
@@ -198,5 +206,6 @@ export {
     payment_display,
     header_account_object,
     header_employee,
-    header_account
+    header_account,
+    account_object_group_id
 }

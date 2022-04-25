@@ -246,7 +246,7 @@
                   </div>
                 </div>
                 <div class="con-ms-ul-tabs tab-detail pt-0 flex">
-                  <div style="width: calc(100vw - 40px);">
+                  <div style="width: 100%">
                     <ms-table-editor
                         ref="table-editor"
                         :header-data="headerData"
@@ -602,7 +602,11 @@ export default {
             // đóng form
             this.hide();
           } else {
-            this.openPopup(Enum.DialogCode.Warning, Resource.ServerErrorMessage);
+            let errorData = response.data.data;
+            let keys = Object.keys(errorData);
+            let errorMsg = errorData[keys[0]];
+            this.openPopup(Enum.DialogCode.Warning, errorMsg);
+            this.payment.document_included = Intl.NumberFormat("vi-VN").format(this.payment.document_included);
           }
         } else if (this.formMode === Enum.FormMode.Update) { // Cập nhật
           let response = await this.updatePayment(this.payment);
@@ -614,7 +618,11 @@ export default {
             })
             this.hide();
           } else {
-            this.openPopup(Enum.DialogCode.Warning, Resource.ServerErrorMessage);
+            let errorData = response.data.data;
+            let keys = Object.keys(errorData);
+            let errorMsg = errorData[keys[0]];
+            this.openPopup(Enum.DialogCode.Warning, errorMsg);
+            this.payment.document_included = Intl.NumberFormat("vi-VN").format(this.payment.document_included);
           }
         }
       }

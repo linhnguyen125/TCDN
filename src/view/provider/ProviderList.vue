@@ -141,6 +141,7 @@ import format from "string-format";
 import Resource from "@/resources/resources";
 import MSDialog from "@/components/base/v2/MSDialog";
 import {toast} from "@/lib/toast";
+import {createKeybindingsHandler} from "tinykeys";
 
 export default {
   name: "ProviderList",
@@ -241,6 +242,27 @@ export default {
       this.showListAction = false;
     },
   },
+  mounted() {
+    // Xử lý phím tắt
+    let handler = createKeybindingsHandler({
+      "$mod+Alt+O": () => {
+        this.openModal({data: {}, formMode: Enum.FormMode.Create});
+      },
+      "$mod+K": (event) => {
+        event.preventDefault();
+        this.$refs.txtSearch.focus();
+      },
+      "$mod+R": (event) => {
+        event.preventDefault();
+        this.loadData();
+      },
+      "$mod+E": (event) => {
+        event.preventDefault();
+        this.exportData();
+      },
+    })
+    window.addEventListener("keydown", handler)
+  },
   methods: {
     ...mapActions(["getAccountObjectsPaging", "getLayout", "deleteAccountObject", "deleteAccountObjects"]),
 
@@ -294,6 +316,7 @@ export default {
      */
     openModal({data, formMode}) {
       this.$refs["provider-detail"].openModal({data, formMode});
+      this.$refs["provider-detail"].autoFocus();
     },
 
     /**

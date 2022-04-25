@@ -4,23 +4,25 @@ import {LOCAL_API_URL} from "../../../public/config";
 
 const state = {
     account_objects: null,
+    new_account_object_code: null,
 };
 
 const getters = {
     account_objects: (state) => {
         return state.account_objects;
     },
+    new_account_object_code: (state) => {
+        return state.new_account_object_code;
+    }
 };
 
 const mutations = {
     setAccountObjects(state, account_objects) {
         state.account_objects = account_objects;
     },
-    deleted(state, vendor_id) {
-        state.account_objects.data = state.account_objects.data.filter((item) => {
-            return item.account_object_id !== vendor_id;
-        });
-    },
+    setNewCode(state, new_code) {
+        state.new_account_object_code = new_code;
+    }
 };
 
 const actions = {
@@ -135,6 +137,18 @@ const actions = {
             return error.response;
         }
     },
+
+    async getNewAccountObjectCode({commit}) {
+        loading.show();
+        try {
+            const response = await axios.get(`${LOCAL_API_URL}/AccountObjects/newAccountObjectCode`);
+            loading.hide();
+            commit("setNewCode", response.data);
+        } catch (error) {
+            loading.hide();
+            return error.response;
+        }
+    }
 };
 
 export default {

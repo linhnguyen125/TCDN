@@ -1,10 +1,11 @@
 <template>
   <transition name="slide">
-    <div v-if="isShowModal" class="m-wrapper-modal">
+    <div v-if="isShowModal" class="m-wrapper-modal" ref="modal">
       <div class="m-modal">
         <Form
             class="h-full"
             @submit="onSubmit"
+            :validation-schema="schema"
             @invalid-submit="onInvalidSubmit"
             id="formAddEmployee"
             style="background-color: inherit"
@@ -82,6 +83,7 @@
                             type="text"
                         >
                           <input
+                              ref="taxCode"
                               v-bind="field"
                               :class="{invalid: errorMessage}"
                               :title="errorMessage"
@@ -102,6 +104,7 @@
                               v-bind="field"
                               :class="{invalid: errorMessage}"
                               :title="errorMessage"
+                              ref="account_object_code"
                           />
                         </Field>
                       </div>
@@ -184,11 +187,12 @@
                       <div class="m-input">
                         <label>Nhóm nhà cung cấp</label>
                         <v-select
-                            v-model="provider.account_object_group_code_list"
+                            v-model="provider.account_object_group_id"
                             :multiple="true"
-                            :options="['Đối tượng 1', 'Đối tượng 2', 'Đối tượng 3']"
+                            :options="account_object_group_id"
                             label="label"
-                            id="account_object_group_code_list"
+                            :reduce="(account_object_group_id) => account_object_group_id.value"
+                            id="account_object_group_id"
                         ></v-select>
                       </div>
                     </div>
@@ -548,8 +552,17 @@
 <script>
 import {Form, Field} from "vee-validate";
 import {mapGetters, mapActions} from 'vuex';
-import {payment_term_header, payment_term, pay_account_header, pay_account, header_employee} from '@/script/object';
+import {
+  payment_term_header,
+  payment_term,
+  pay_account_header,
+  pay_account,
+  header_employee,
+  account_object_group_id
+} from '@/script/object';
 import {toast} from "@/lib/toast";
+import {createKeybindingsHandler} from "tinykeys";
+import * as yup from "yup";
 import Resource from "@/resources/resources";
 import MSDialog from "@/components/base/v2/MSDialog";
 import Enum from "@/script/enum";
@@ -561,7 +574,13 @@ import format from "string-format";
 export default {
   name: "ProviderDetail",
   data() {
+    const schema = yup.object({
+      account_object_code: yup
+          .string()
+          .required("Mã nhà cung cấp không được để trống"),
+    });
     return {
+      schema,
       provider: {},
       paymentTermHeader: payment_term_header,
       paymentTerm: payment_term,
@@ -598,6 +617,7 @@ export default {
       wards: [],
       isSameAddress: false,
       popupOption: {},
+      account_object_group_id: account_object_group_id,
     }
   },
   components: {
@@ -616,7 +636,7 @@ export default {
     })
   },
   computed: {
-    ...mapGetters(["location", "employees"]),
+    ...mapGetters(["location", "employees", "new_account_object_code"]),
   },
   watch: {
     "provider.province_or_city": function (value) {
@@ -635,8 +655,27 @@ export default {
       }
     }
   },
+  mounted() {
+    // Xử lý phím tắt
+    let handler = createKeybindingsHandler({
+      "$mod+S": (event) => {
+        event.preventDefault();
+        this.submit();
+      },
+      "$mod+Shift+S": (event) => {
+        event.preventDefault();
+        this.onSaveAndInsert();
+        this.$refs.btnSaveAndInsert.click();
+      },
+      "Escape": event => {
+        event.preventDefault()
+        this.closeModal();
+      },
+    })
+    window.addEventListener("keydown", handler)
+  },
   methods: {
-    ...mapActions(["getLocation", "createAccountObject", "getEmployees", "updateAccountObject"]),
+    ...mapActions(["getLocation", "createAccountObject", "getEmployees", "updateAccountObject", "getNewAccountObjectCode"]),
 
     /**
      * Hàm thêm dòng mới
@@ -715,9 +754,13 @@ export default {
      * @since 11/04/2022
      * @author NVLINH
      */
-    openModal({data, formMode}) {
+    async openModal({data, formMode}) {
       this.provider = data;
       this.formMode = formMode;
+      if (this.formMode === Enum.FormMode.Create) {
+        await this.getNewAccountObjectCode();
+        this.provider.account_object_code = this.new_account_object_code;
+      }
       this.isShowModal = true;
     },
 
@@ -730,6 +773,9 @@ export default {
     async onSubmit(value) {
       this.provider.sub_address = JSON.stringify(this.account_object_address);
       this.provider.bank_info = JSON.stringify(this.account_object_bank_account);
+      if (this.provider.account_object_group_id) {
+        this.provider.account_object_group_id = JSON.stringify(this.provider.account_object_group_id);
+      }
       this.provider.is_vendor = true;
       if (this.formMode === Enum.FormMode.Create) {
         let response = await this.createAccountObject(this.provider);
@@ -739,15 +785,24 @@ export default {
           this.$emit("created", response.data.data);
           this.$emit("handleLoadData");
           this.closeModal();
-        } else if (response.data.statusCode === Enum.StatusCode.BadRequest) { // Trùng số tài khoản
+        } else if (response.data.statusCode === Enum.StatusCode.BadRequest) { // thông báo khi thất bại
           let errorData = response.data.data;
           let keys = Object.keys(errorData);
           let errorMsg = errorData[keys[0]];
           this.openPopup(Enum.DialogCode.Warning, errorMsg);
+          if (this.provider.account_object_group_id) {
+            this.provider.account_object_group_id = JSON.parse(this.provider.account_object_group_id);
+          }
         } else { // Lỗi server
+          if (this.provider.account_object_group_id) {
+            this.provider.account_object_group_id = JSON.parse(this.provider.account_object_group_id);
+          }
           console.log(response);
         }
       } else {
+        if (this.provider.account_object_group_id) {
+          this.provider.account_object_group_id = JSON.stringify(this.provider.account_object_group_id);
+        }
         let response = await this.updateAccountObject(this.provider);
         if (response.data.statusCode === Enum.StatusCode.OK) { // Thành công
           this.showToastMsg({
@@ -761,8 +816,22 @@ export default {
           let keys = Object.keys(errorData);
           let errorMsg = errorData[keys[0]];
           this.openPopup(Enum.DialogCode.Warning, errorMsg);
+          if (this.provider.account_object_group_id) {
+            this.provider.account_object_group_id = JSON.parse(this.provider.account_object_group_id);
+          }
         }
       }
+    },
+
+    /**
+     * Hàm thực hiện khi submit form có lỗi validate
+     * @param errors
+     */
+    onInvalidSubmit({errors}) {
+      let keys = Object.keys(errors)
+      this.openPopup(Enum.DialogCode.Info, errors[keys[0]]);
+      // auto focus
+      // this.$refs[keys[0]].focus();
     },
 
     /**
@@ -804,6 +873,17 @@ export default {
       };
       // Mở dialog
       this.$refs.dialog.openDialog();
+    },
+
+    submit() {
+      this.$refs.save.click();
+    },
+
+    autoFocus() {
+      // Focus vào ô đầu tiên khi mở form
+      this.$nextTick(function () {
+        this.$refs.taxCode.focus();
+      });
     }
   }
 }

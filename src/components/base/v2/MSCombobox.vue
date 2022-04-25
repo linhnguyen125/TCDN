@@ -229,7 +229,8 @@ export default {
         //focus vào input
         this.focus();
         //toggle hiện combobox
-        this.showCombobox = !this.showCombobox;
+        this.toggleShow();
+        // this.$refs.dropDownContent.classList.toggle("show");
         //show content
         // this.$refs.dropDownContent.classList.toggle("show");
         //xoay 180 độ mũi tên
@@ -310,6 +311,10 @@ export default {
      */
     focus: function () {
       this.$refs.input.focus();
+    },
+
+    toggleShow() {
+      this.showCombobox = !this.showCombobox;
     },
 
     /**
@@ -424,6 +429,11 @@ label
   border: 1px solid #b7b7b7;
   box-shadow: #b7b7b7 1px 5px 12px;
   z-index: 99999;
+  /*display: none;*/
+}
+
+.show {
+  display: block;
 }
 
 .m-combobox-content .m-table {
