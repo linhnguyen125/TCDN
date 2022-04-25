@@ -135,7 +135,6 @@
     box-sizing: border-box;
 }
 
-.m-table tfoot td {
-    border-top: 1px solid #bbbbbb;
-    border-bottom: 1px solid #bbbbbb;
+.m-table tfoot th {
+    border-top: 1px solid #c7c7c7;
 }
