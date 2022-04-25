@@ -95,8 +95,9 @@
     <tfoot v-if="showFooter">
     <tr>
       <th></th>
-      <th v-for="(thead, col) in headerData" :key="col" :class="{'text-align-right': thead.key === 'total_amount'}">
+      <th v-for="(thead, col) in headerData" :key="col" :class="[{'text-align-right': thead.key === 'total_amount'}, {'text-align-center': thead.key === 'posted_date'}]">
         <span v-if="thead.key === 'total_amount'">{{ Intl.NumberFormat("vi-VN").format(total) }}</span>
+        <span v-if="thead.key === 'posted_date'">Tổng</span>
       </th>
       <th></th>
     </tr>
