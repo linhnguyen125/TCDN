@@ -280,6 +280,7 @@
           </div>
           <div class="flex">
             <ms-button
+                ref="btn_save"
                 type="submit"
                 :option="{
                 title: 'Cất',
@@ -307,6 +308,7 @@
           </div>
           <div class="flex">
             <ms-button
+                ref="btn_save"
                 type="submit"
                 :option="{
           title: 'Cất',
@@ -409,6 +411,7 @@ export default {
       backup: {},
       backupDetail: {},
       pageSizeEmployee: 20,
+      origin: "",
     }
   },
   components: {
@@ -558,6 +561,7 @@ export default {
         delete item["account_header"]
         delete item["account_object_header"]
 
+        // validate cho tài khoản nợ
         if (!item['debit_account']) {
           valid = false;
           let refName = "debit_account" + index;
@@ -565,6 +569,7 @@ export default {
           this.openPopup(Enum.DialogCode.Info, "Tài khoản nợ không được để trống")
           return
         }
+        // validate cho tài khoản có
         if (!item['credit_account']) {
           valid = false;
           let refName = "credit_account" + index;
@@ -572,7 +577,7 @@ export default {
           this.openPopup(Enum.DialogCode.Info, "Tài khoản có không được để trống")
           return
         }
-        // format lại số tiền (amount_oc)
+        // validate số tiền & format lại thành kiểu decimal (amount_oc)
         if (item['amount_oc'] != 0) {
           if (isString(item['amount_oc'])) {
             item['amount_oc'] = formatCurrencyToSave(item['amount_oc']);
@@ -817,7 +822,7 @@ export default {
         await this.getNewPaymentCode();
         this.payment.ca_payment_code = this.newPaymentCode;
       }
-      // Format định dạng ngày (nếu có) tháng trước khi hiển thị lên form
+      // Format định dạng ngày tháng (nếu có) trước khi hiển thị lên form
       if (this.payment.posted_date) {
         this.payment.posted_date = new Date(this.payment.posted_date);
       } else {
@@ -867,6 +872,7 @@ export default {
       // gán dữ liệu phiếu chi vào backup
       this.backup = JSON.parse(JSON.stringify(this.payment));
       this.backupDetail = JSON.parse(JSON.stringify(this.description));
+      this.origin = this.snapModal(this.description);
       this.isShow = true;
     },
 
@@ -879,6 +885,11 @@ export default {
      * Đóng form thêm mới phiếu chi
      */
     hide() {
+      let current = this.snapModal(this.description);
+      if (this.origin !== current) {
+        this.openPopup(Enum.DialogCode.Edit, Resource.Dialog.Data_changed)
+        return;
+      }
       this.payment = {};
       this.description = [{}];
       this.isShow = false
@@ -894,6 +905,29 @@ export default {
         this.$refs["provider-detail"].openModal({data: {}, formMode: 1});
       }
       return;
+    },
+
+    /**
+     * Lưu lại dữ liệu khi bắt đầu mở form
+     * @returns {string}
+     * @since 12/03/2022
+     * @author NVLINH
+     */
+    snapModal(description) {
+      this.payment.description = description;
+      return JSON.stringify(this.payment);
+    },
+
+    confirm(confirmation) {
+      if (confirmation === false) {
+        this.payment = {};
+        this.description = [{}];
+        this.$refs['dialog'].closeDialog();
+        this.isShow = false
+      } else {
+        this.$refs['dialog'].closeDialog();
+        this.onSubmit(0);
+      }
     },
 
     /**

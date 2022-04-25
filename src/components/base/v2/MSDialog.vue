@@ -70,7 +70,7 @@
             title: 'Hủy',
             class: 'm-modal-btn'
           }"
-              @click="confirm('cancel')"
+              @click="confirm(false)"
           />
           <div class="flex">
             <ms-button

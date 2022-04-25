@@ -2,7 +2,7 @@ const Resource = {
     Employee: {
         Success_deleted: "Xóa {0} thành công",
         Success_updated: "Cập nhật {0} thành công",
-        Success_created: "Tạo mới nhân viên thành công",
+        Success_created: "Tạo mới {0} thành công",
         Multi_delete: "Bạn có thực sự muốn xóa những {0} đã chọn không?",
         Validate_error: "Thông tin đầu vào không hợp lệ.",
         Invalid_EmployeeCode_Required: "Mã nhân viên không được để trống.",

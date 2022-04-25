@@ -781,7 +781,7 @@ export default {
         let response = await this.createAccountObject(this.provider);
         // Xử lý khi có thông tin trả về
         if (response.data.statusCode === Enum.StatusCode.Created) { // Thành công
-          this.showToastMsg({title: Resource.Employee.Success_created, type: Enum.ToastType.Success})
+          this.showToastMsg({title: format(Resource.Employee.Success_created, "nhà cung cấp"), type: Enum.ToastType.Success})
           this.$emit("created", response.data.data);
           this.$emit("handleLoadData");
           this.closeModal();

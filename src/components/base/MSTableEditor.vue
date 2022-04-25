@@ -341,6 +341,7 @@ export default {
 
     addErrorCbx(refName) {
       this.$refs[refName][0].addError();
+      // this.$refs[refName][0].focus();
     }
   }
 }
