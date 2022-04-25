@@ -74,7 +74,6 @@ const payment_display = [
         isShow: true,
         type: 0,
         objectType: 'number',
-        required: true,
         errorTitle: "Số tiền không được để trống"
     },
     {key: 'amount', name: 'Quy đổi', col_width: 107, isShow: false, type: 1},
@@ -138,10 +137,10 @@ const payment_template = [
     {name: 'Ngày chứng từ', key: 'refdate', isShow: false, col_width: '', theadClass: 'text-align-center mw-10'},
     {
         name: 'Số chứng từ',
-        key: 'document_included',
+        key: 'ca_payment_code',
         col_width: '150',
         isShow: true,
-        theadClass: 'text-align-right mw-10'
+        theadClass: 'text-align-left mw-10'
     },
     {name: 'Diễn giải', key: 'journal_memo', isShow: true, col_width: '400', theadClass: 'mw-20'},
     {name: 'Số tiền', key: 'total_amount', isShow: true, col_width: '150', theadClass: 'mw-10 text-align-right'},

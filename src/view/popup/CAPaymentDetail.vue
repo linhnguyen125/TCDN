@@ -1,10 +1,10 @@
 <template>
   <transition name="slide">
-    <div v-if="isShow" class="ca-payment">
+    <div v-if="isShow" class="ca-payment" ref="payment-detail">
       <div class="header">
         <div class="top-header">
           <div class="m-icon m-recent-log w-6 h-6 cursor-pointer"></div>
-          <div class="title">Phiếu chi PC001</div>
+          <div class="title">Phiếu chi {{ payment.ca_payment_code }}</div>
           <div class="header-detail-input">
             <div class="m-input" style="width: 350px !important;">
               <v-select
@@ -42,6 +42,7 @@
                         <div class="m-input">
                           <label>Đối tượng</label>
                           <ms-combobox
+                              ref="cbx_acc"
                               :options="accountObjects"
                               v-model="payment.account_object_code"
                               :append-to-body="true"
@@ -163,6 +164,7 @@
                         <label>Ngày hoạch toán</label>
                         <Field name="posted_date">
                           <date-picker
+                              ref="posted_date"
                               v-model:value="payment.posted_date"
                               :class="['m-input']"
                               autocomplete="off"
@@ -224,7 +226,7 @@
                 <div class="con-ms-ul-tabs tab-detail flex">
                   <ul class="flex flex-1">
                     <li>
-                      <div class="ms-tabs-btn">
+                      <div class="ms-tabs-btn" style="padding: 0">
                         <div class="tab-label">
                           Hoạch toán
                         </div>
@@ -381,6 +383,7 @@ import ProviderDetail from "@/view/provider/ProviderDetail";
 import MSDialog from "@/components/base/v2/MSDialog";
 import MSInputNumber from "@/components/base/input/MSInputNumber";
 import {isString} from "lodash";
+import moment from "moment";
 
 export default {
   name: "CAPaymentDetail",
@@ -411,7 +414,7 @@ export default {
       backup: {},
       backupDetail: {},
       pageSizeEmployee: 20,
-      origin: "",
+      accountObjectClone: [],
     }
   },
   components: {
@@ -462,6 +465,8 @@ export default {
       account_header: this.headerAccount,
       account_object_header: this.headerAccountObject
     }]
+    // console.log(this.description)
+    this.accountObjectClone = JSON.parse(JSON.stringify(this.accountObjects));
   },
   computed: {
     ...mapGetters(["layout", "account_objects", "employeesPaging", "accounts", "newPaymentCode"]),
@@ -522,11 +527,20 @@ export default {
       try {
         let accountObject = this.account_objects["data"].filter(item => item.account_object_code === value);
         let accountObjectName = accountObject[0].account_object_name;
+        //bind dữ liệu lên form
         this.payment.account_object_name = accountObjectName
         this.payment.account_object_contact_name = accountObjectName;
         this.payment.journal_memo = `Chi tiền cho ${accountObjectName}`;
         this.payment.account_object_address = accountObject[0].address;
         this.payment.account_object_id = accountObject[0].account_object_id;
+        // bind lên detail
+        if (this.formMode === Enum.FormMode.Create) {
+          for (let i = 0; i < this.description.length; i++) {
+            this.description[i].description = `Chi tiền cho ${accountObjectName}`;
+            this.description[i].account_object_name = accountObjectName;
+            this.description[i].account_object_id = accountObject[0].account_object_id
+          }
+        }
       } catch (e) {
         console.log(e)
       }
@@ -539,6 +553,11 @@ export default {
         this.payment.employee_id = employee[0].employee_id;
       } catch (e) {
         console.log(e)
+      }
+    },
+    "payment.posted_date": function (newValue, oldValue) {
+      if (this.compareDate(oldValue, this.payment.refdate)) {
+        this.payment.refdate = newValue;
       }
     }
   },
@@ -553,6 +572,11 @@ export default {
 
     async onSubmit(value) {
       let valid = true;
+      // validate ngày hoạch toán & ngày chứng tù
+      if (!this.validatePostedDate()) {
+        return
+      }
+      // validate chi tiết phiếu chi (detail)
       let descTmp = JSON.parse(JSON.stringify(this.description));
       let index = 0;
       descTmp.forEach(item => {
@@ -571,7 +595,7 @@ export default {
         }
         // validate cho tài khoản có
         if (!item['credit_account']) {
-          valid = false;
+          valid = false
           let refName = "credit_account" + index;
           this.$refs['table-editor'].addErrorCbx(refName);
           this.openPopup(Enum.DialogCode.Info, "Tài khoản có không được để trống")
@@ -582,10 +606,6 @@ export default {
           if (isString(item['amount_oc'])) {
             item['amount_oc'] = formatCurrencyToSave(item['amount_oc']);
           }
-        } else {
-          valid = false;
-          this.openPopup(Enum.DialogCode.Info, "Số tiền không được để trống")
-          return
         }
         index++;
       })
@@ -593,7 +613,7 @@ export default {
       // chuyển số chứng từ về dạng số
       this.payment.document_included = formatCurrencyToSave(this.payment.document_included);
 
-      if (valid !== false) {
+      if (valid === true) {
         if (this.formMode === Enum.FormMode.Create) { // Thêm mới
           let response = await this.createPayment(this.payment);
           if (response.data.statusCode === Enum.StatusCode.Created) {
@@ -605,7 +625,7 @@ export default {
             // load lại data
             this.$emit("loadData");
             // đóng form
-            this.hide();
+            this.isShow = false;
           } else {
             let errorData = response.data.data;
             let keys = Object.keys(errorData);
@@ -621,7 +641,7 @@ export default {
               title: format(Resource.Employee.Success_updated, "Phiếu chi "),
               type: Enum.ToastType.Success
             })
-            this.hide();
+            this.isShow = false;
           } else {
             let errorData = response.data.data;
             let keys = Object.keys(errorData);
@@ -630,6 +650,8 @@ export default {
             this.payment.document_included = Intl.NumberFormat("vi-VN").format(this.payment.document_included);
           }
         }
+      } else {
+        return
       }
     },
 
@@ -643,13 +665,9 @@ export default {
      * @author NVLINH
      */
     addRow(objectName) {
-      this.description.push({
-        accounts: this.accounts,
-        account_objects: this.accountObjects,
-        account_header: this.headerAccount,
-        account_object_header: this.headerAccountObject,
-        amount_oc: 0,
-      });
+      let maxLength = this.description.length;
+      let desc = JSON.parse(JSON.stringify(this.description[maxLength - 1]));
+      this.description.push(desc);
     },
 
     /**
@@ -670,9 +688,10 @@ export default {
      */
     deleteAllRow(objectName) {
       this.payment.total_amount = 0;
+      // this.description.splice(0, this.description.length - 1)
       this.description = [{
         accounts: this.accounts,
-        account_objects: this.accountObjects,
+        account_objects: this.accountObjectClone,
         account_header: this.headerAccount,
         account_object_header: this.headerAccountObject,
         amount_oc: 0,
@@ -762,6 +781,7 @@ export default {
      * @author NVLINH
      */
     updateTotalAmount() {
+      console.log(this.description);
       let description = JSON.parse(JSON.stringify(this.description));
       this.payment.total_amount = 0;
       if (description.length === 0) {
@@ -775,6 +795,43 @@ export default {
             this.payment.total_amount += item['amount_oc'];
           }
         })
+      }
+    },
+
+    /**
+     * Hàm so sánh 2 giá trị ngày tháng có giống nhau hay không
+     * @param date1
+     * @param date2
+     * @returns {boolean}
+     */
+    compareDate(date1, date2) {
+      if (date1 && date2) {
+        if (date1.getTime() === date2.getTime())
+          return true;
+      }
+      return false;
+    },
+
+    /**
+     * Hàm validate ngày hoạch toán
+     * @returns {boolean}
+     * @since 25/04/2022
+     * @author NVLINH
+     */
+    validatePostedDate() {
+      let inputDate = this.$refs.posted_date.querySelector("input.mx-input");
+      inputDate.addEventListener('focus', function () {
+        inputDate.classList.remove("invalid");
+      })
+      if (this.payment.posted_date.getTime() < this.payment.refdate.getTime()) {
+        inputDate.classList.add("invalid");
+        let format = moment(this.payment.refdate)
+        format = format.format('DD/MM/YYYY')
+        this.openPopup(Enum.DialogCode.Warning, `Ngày hạch toán phải lớn hơn hoặc bằng Ngày chứng từ <${format}>. Xin vui lòng kiểm tra lại.`)
+        return false;
+      } else {
+        inputDate.classList.remove("invalid");
+        return true;
       }
     },
 
@@ -853,17 +910,28 @@ export default {
         let response = await axios.get(`http://localhost:5278/api/v1/CaPaymentDetails/getByRefid?refid=${data['ca_payment_id']}`)
         let descriptions = response.data;
         this.description = [];
-        descriptions.forEach(item => {
-          item.accounts = this.accounts;
-          item.account_objects = this.accountObjects;
-          item.account_header = this.headerAccount;
-          item.account_object_header = this.headerAccountObject;
-          this.description.push(item);
-        })
+        // Nếu có detail
+        if (descriptions.length !== 0) {
+          descriptions.forEach(item => {
+            item.accounts = this.accounts;
+            item.account_objects = this.accountObjectClone;
+            item.account_header = this.headerAccount;
+            item.account_object_header = this.headerAccountObject;
+            this.description.push(item);
+          })
+        } else { // không có detail thì push mặc định
+          this.description = [{
+            accounts: this.accounts,
+            account_objects: this.accountObjectClone,
+            account_header: this.headerAccount,
+            account_object_header: this.headerAccountObject,
+            amount_oc: 0
+          }];
+        }
       } else {
         this.description = [{
           accounts: this.accounts,
-          account_objects: this.accountObjects,
+          account_objects: this.accountObjectClone,
           account_header: this.headerAccount,
           account_object_header: this.headerAccountObject,
           amount_oc: 0
@@ -872,12 +940,23 @@ export default {
       // gán dữ liệu phiếu chi vào backup
       this.backup = JSON.parse(JSON.stringify(this.payment));
       this.backupDetail = JSON.parse(JSON.stringify(this.description));
-      this.origin = this.snapModal(this.description);
+      // this.origin = this.snapModal(this.description);
       this.isShow = true;
     },
 
     backupData() {
       this.payment = JSON.parse(JSON.stringify(this.backup));
+      // Format định dạng ngày tháng (nếu có) trước khi hiển thị lên form
+      if (this.payment.posted_date) {
+        this.payment.posted_date = new Date(this.payment.posted_date);
+      } else {
+        this.payment.posted_date = new Date();
+      }
+      if (this.payment.refdate) {
+        this.payment.refdate = new Date(this.payment.refdate);
+      } else {
+        this.payment.refdate = new Date();
+      }
       this.description = JSON.parse(JSON.stringify(this.backupDetail));
     },
 
@@ -885,8 +964,10 @@ export default {
      * Đóng form thêm mới phiếu chi
      */
     hide() {
-      let current = this.snapModal(this.description);
-      if (this.origin !== current) {
+      // let current = this.snapModal(this.description);
+      let currentPayment = JSON.stringify(this.payment);
+      let currentDetail = JSON.stringify(this.description);
+      if (JSON.stringify(this.backup) !== currentPayment || JSON.stringify(this.backupDetail) !== currentDetail) {
         this.openPopup(Enum.DialogCode.Edit, Resource.Dialog.Data_changed)
         return;
       }
@@ -900,9 +981,10 @@ export default {
      * @since 15/04/2022
      * @author NVLINH
      */
-    openProviderModal() {
+    async openProviderModal() {
       if (this.formMode !== 5) {
-        this.$refs["provider-detail"].openModal({data: {}, formMode: 1});
+        await this.$refs["provider-detail"].openModal({data: {}, formMode: 1});
+        await this.$refs['provider-detail'].autoFocus();
       }
       return;
     },
@@ -914,7 +996,7 @@ export default {
      * @author NVLINH
      */
     snapModal(description) {
-      this.payment.description = description;
+      this.payment['description'] = description;
       return JSON.stringify(this.payment);
     },
 
@@ -955,6 +1037,13 @@ export default {
           txtSearch: txtSearch,
         });
       }
+    },
+
+    autoFocus() {
+      // Focus vào ô đầu tiên khi mở form
+      this.$nextTick(function () {
+        this.$refs.cbx_acc.focus();
+      });
     },
 
     /**

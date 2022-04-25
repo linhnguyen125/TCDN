@@ -1,20 +1,21 @@
 <template>
-  <div class="row-input">
-    <ms-combobox
-        :options="options2"
-        v-model="dropdownValue"
-        :append-to-body="true"
-        :searchable="true"
-        :listHeader="headerEmployee"
-        labelText="Tài khoản ngân hàng"
-        label="label"
-    ></ms-combobox>
-  </div>
-  <div class="row-input">
-    <div class="m-input">
-      <ms-input-number v-model="number"></ms-input-number>
-    </div>
-  </div>
+  <!--  <div class="row-input">-->
+  <!--    <ms-combobox-->
+  <!--        :options="options2"-->
+  <!--        v-model="dropdownValue"-->
+  <!--        :append-to-body="true"-->
+  <!--        :searchable="true"-->
+  <!--        :listHeader="headerEmployee"-->
+  <!--        labelText="Tài khoản ngân hàng"-->
+  <!--        label="label"-->
+  <!--    ></ms-combobox>-->
+  <!--  </div>-->
+  <!--  <div class="row-input">-->
+  <!--    <div class="m-input">-->
+  <!--      <ms-input-number v-model="number"></ms-input-number>-->
+  <!--    </div>-->
+  <!--  </div>-->
+  <h1>Tính năng đang được phát triển</h1>
 </template>
 
 <script>
@@ -23,47 +24,9 @@ import MSCombobox from "@/components/base/v2/MSCombobox";
 import MSInputNumber from "@/components/base/input/MSInputNumber";
 
 export default {
-  components: {
-    "MsCombobox": MSCombobox,
-    "MsInputNumber": MSInputNumber,
-  },
+  components: {},
   data() {
-    return {
-      number: 123456,
-      dropdownValue: "123456",
-      options2: [
-        {
-          value: "123",
-          label: "Nguyễn Văn Quyết",
-        },
-        {
-          value: "1234",
-          label: "Nguyễn Văn Quyết 2",
-        },
-        {
-          value: "12345",
-          label: "Nguyễn Văn Quyết 3",
-        },
-        {
-          value: "123456",
-          label: "Nguyễn Văn Quyết 4",
-        },
-      ],
-      headerEmployee: [
-        {
-          name: "Mã nhân viên",
-          key: "value",
-          col_width: 150,
-          resize: false
-        },
-        {
-          name: "Tên nhân viên",
-          key: "label",
-          col_width: 300,
-          resize: false
-        },
-      ],
-    };
+    return {};
   },
   name: "ReportComponent",
   computed: {

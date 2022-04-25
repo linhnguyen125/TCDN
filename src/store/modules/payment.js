@@ -152,6 +152,27 @@ const actions = {
             return error.response;
         }
     },
+
+    /**
+     * Gọi api export dữ liệu ra file excel
+     * @param commit
+     * @param tableExport
+     * @param filterObject
+     * @returns {Promise<any>}
+     * @since 15/03/2022
+     * @author Nguyễn Văn Linh
+     */
+    async export({commit}, filterObject) {
+        loading.show();
+        try {
+            const response = await axios.post(`${LOCAL_API_URL}/CaPayments/export`, filterObject, {responseType: 'blob'});
+            loading.hide();
+            return response.data;
+        } catch (error) {
+            loading.hide();
+            return error.response;
+        }
+    }
 };
 
 export default {

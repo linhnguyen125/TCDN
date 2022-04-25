@@ -9,7 +9,7 @@
           <template v-slot:button>
             <button
                 class="m-btn-add"
-                @click="this.$refs['payment-detail'].openModal({ data: {}, formMode: 1 })"
+                @click="openModal({ data: {}, formMode: 1 })"
             >
               <span>Thêm chi tiền</span>
             </button>
@@ -95,6 +95,8 @@
           :isLoading="isLoading"
           :page-size="pageSize"
           :view="true"
+          :show-footer="true"
+          :total="totalAmount"
           @handleOpenModalView="openModal"
           @handleShowFunc="showFunc"
           @handleChangeArrIds="onChangeArrIds"
@@ -158,6 +160,8 @@ import format from "string-format";
 import Resource from "@/resources/resources";
 import MSDialog from "@/components/base/v2/MSDialog";
 import {toast} from "@/lib/toast";
+
+const FileDownload = require('js-file-download');
 
 export default {
   name: "CAPaymentList",
@@ -237,6 +241,14 @@ export default {
       return 0;
     },
 
+    // Tổng tiền
+    totalAmount() {
+      if (this.payments) {
+        return this.payments.totalAmount;
+      }
+      return 0;
+    },
+
     showMultiDelete() {
       return this.arrIds.length >= 1;
     }
@@ -254,12 +266,11 @@ export default {
       this.loadData();
     },
     arrIds() {
-      console.log(this.arrIds)
       this.showListAction = false;
     },
   },
   methods: {
-    ...mapActions(["getPaymentsPaging", "getLayout", "deletePayment", "deletePayments"]),
+    ...mapActions(["getPaymentsPaging", "getLayout", "deletePayment", "deletePayments", "export"]),
 
     /**
      * Hàm load lại dữ liệu
@@ -430,12 +441,33 @@ export default {
     },
 
     /**
+     * Hàm thực hiện xuất khẩu dữ liệu
+     * @since 18/03/2022
+     * @author NVLINH
+     */
+    exportData() {
+      let tableExport = this.headerData;
+      let filterObject = {
+        page_size: 1000,
+        page_number: 1,
+        txt_search: this.txtSearch,
+        columns: this.columns,
+        tableExport: tableExport,
+      }
+      let response = this.export(filterObject);
+      response.then((response) => {
+        FileDownload(response, 'Danh_sach_phieu_chi.xlsx');
+      })
+    },
+
+    /**
      * Mở form chi tiết
      * @since 23/04/2022
      * @author NVLINH
      */
-    openModal({data, formMode}) {
-      this.$refs['payment-detail'].openModal({data, formMode});
+    async openModal({data, formMode}) {
+      await this.$refs['payment-detail'].openModal({data, formMode});
+      await this.$refs['payment-detail'].autoFocus();
     },
 
     /**

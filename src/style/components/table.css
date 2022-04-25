@@ -126,3 +126,16 @@
 .m-table .edit-icon:active {
     border: 1px solid #0075c0;
 }
+
+.m-table tfoot {
+    position: sticky;
+    bottom: 56px;
+    background-color: #eceef1;
+    height: 34px;
+    box-sizing: border-box;
+}
+
+.m-table tfoot td {
+    border-top: 1px solid #bbbbbb;
+    border-bottom: 1px solid #bbbbbb;
+}

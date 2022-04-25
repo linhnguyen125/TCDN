@@ -578,6 +578,9 @@ export default {
       account_object_code: yup
           .string()
           .required("Mã nhà cung cấp không được để trống"),
+      account_object_name: yup
+          .string()
+          .required("Tên nhà cung cấp không được phép để trống"),
     });
     return {
       schema,
@@ -781,7 +784,10 @@ export default {
         let response = await this.createAccountObject(this.provider);
         // Xử lý khi có thông tin trả về
         if (response.data.statusCode === Enum.StatusCode.Created) { // Thành công
-          this.showToastMsg({title: format(Resource.Employee.Success_created, "nhà cung cấp"), type: Enum.ToastType.Success})
+          this.showToastMsg({
+            title: format(Resource.Employee.Success_created, "nhà cung cấp"),
+            type: Enum.ToastType.Success
+          })
           this.$emit("created", response.data.data);
           this.$emit("handleLoadData");
           this.closeModal();

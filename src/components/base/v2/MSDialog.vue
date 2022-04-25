@@ -70,7 +70,7 @@
             title: 'Hủy',
             class: 'm-modal-btn'
           }"
-              @click="confirm(false)"
+              @click="closeDialog"
           />
           <div class="flex">
             <ms-button
@@ -78,7 +78,7 @@
             title: 'Không',
             class: 'm-modal-btn'
           }"
-                @click="closeDialog"
+                @click="confirm(false)"
             />
             <ms-button
                 :option="{

@@ -37,7 +37,7 @@
                       <div class="m-input" v-if="thead.type === typeOfTableEditor.Input">
                         <input
                             v-if="thead.objectType !== 'number'"
-                            :ref="thead.key + rowSelected"
+                            :ref="thead.key + index"
                             class="input-editor w-full"
                             v-model="data[thead.key]"
                             :disabled="rowSelected !== index"
@@ -176,7 +176,9 @@ export default {
   created() {
     // khi mở form phải tích chọn những cột người dùng đã chọn
     this.columns = this.bodyData.filter(item => item["isShow"] === true);
-    console.log(this.headerData)
+    if (this.bodyData.length === 0) {
+      this.rowSelected = -1;
+    }
   },
   computed: {
     ...mapGetters(["layout"]),
@@ -267,9 +269,11 @@ export default {
      * @since 05/04/2022
      * @author NVLINH
      */
-    addRow() {
+    async addRow() {
       if (this.disabled !== true) {
-        this.$emit("handleAddRow", this.objectName);
+        await this.$emit("handleAddRow", this.objectName);
+        await this.selectRow(this.rowSelected + 1);
+        await this.autoFocus(this.rowSelected);
       }
     },
 
@@ -278,11 +282,13 @@ export default {
      * @since 05/04/2022
      * @author NVLINH
      */
-    deleteAllRow() {
+    async deleteAllRow() {
       // gán lại dòng được chọn = 0
       if (this.disabled !== true) {
         this.rowSelected = 0;
-        this.$emit("handleDeleteAllRow", this.objectName);
+        await this.$emit("handleDeleteAllRow", this.objectName);
+        await this.autoFocus(this.rowSelected);
+
       }
     },
 
@@ -342,6 +348,11 @@ export default {
     addErrorCbx(refName) {
       this.$refs[refName][0].addError();
       // this.$refs[refName][0].focus();
+    },
+
+    autoFocus(index) {
+      let refName = `description${index}`;
+      this.$refs[refName][0].focus();
     }
   }
 }

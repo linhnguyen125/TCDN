@@ -10,12 +10,20 @@
             <div class="div-face-button hoverable receive">
               <div class="title-button">Thu tiền</div>
             </div>
-            <div @mouseover="over" class="div-face-button hoverable payment">
+            <div @mouseover="over" class="div-face-button hoverable payment"
+                 @click="this.$refs['payment-detail'].openModal({data: {}, formMode: 1})">
               <div class="title-button">Chi tiền</div>
             </div>
             <div class="div-face-button hoverable audit">
               <div class="title-button">Kiểm kê quỹ</div>
             </div>
+            <ms-drop-down ref="dropdown" :position="position">
+              <template v-slot:default>
+                <div @click="this.$refs['payment-detail'].openModal({data: {}, formMode: 1})">Phiếu chi</div>
+                <div>Trả tiền theo hóa đơn</div>
+                <div>Nộp thuế</div>
+              </template>
+            </ms-drop-down>
           </div>
         </div>
         <div class="dictionary-area flex">
@@ -62,13 +70,6 @@
       </div>
     </div>
   </div>
-  <ms-drop-down ref="dropdown" :position="position">
-    <template v-slot:default>
-      <div @click="this.$refs['payment-detail'].openModal({data: {}, formMode: 1})">Phiếu chi</div>
-      <div>Trả tiền theo hóa đơn</div>
-      <div>Nộp thuế</div>
-    </template>
-  </ms-drop-down>
   <payment-detail ref="payment-detail"></payment-detail>
 </template>
 <script>
@@ -90,8 +91,8 @@ export default {
     over(e) {
       if (Object.keys(this.position).length !== 2) {
         this.position = {
-          top: e.clientX - 250 + 'px',
-          left: e.clientY - 50 + 'px'
+          top: '135px',
+          left: '0'
         }
       }
       this.$refs.dropdown.showDropDown();

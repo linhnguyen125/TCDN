@@ -78,7 +78,7 @@ export default {
      * @author NVLINH
      */
     onInputNumber(event) {
-      //gọi hàm format định dạng số ngay khi nhập liệu từ base
+      //gọi hàm format định dạng số ngay khi nhập liệu
       this.onNumberInput(event);
 
       //cập nhật lại vào value

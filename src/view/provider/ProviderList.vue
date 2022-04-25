@@ -314,9 +314,9 @@ export default {
      * @param data
      * @param formMode
      */
-    openModal({data, formMode}) {
-      this.$refs["provider-detail"].openModal({data, formMode});
-      this.$refs["provider-detail"].autoFocus();
+    async openModal({data, formMode}) {
+      await this.$refs["provider-detail"].openModal({data, formMode});
+      await this.$refs["provider-detail"].autoFocus();
     },
 
     /**

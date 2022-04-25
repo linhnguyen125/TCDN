@@ -81,20 +81,26 @@
     </tbody>
 
     <!--    Empty data-->
-    <tbody v-if="headerData.length === 0">
-    <tr>
-      <td :colspan="headerData.length + 2">
-        <div style="width: 200vh; padding-left: 20%" class="flex justify-content-center flex-direction-column">
-          <img
-              src="https://actappg1.misacdn.net/img/bg_report_nodata.76e50bd8.svg?fbclid=IwAR2aBsYyuZjArO35Z-1bXfHHckdaShr8Yk5mxIoM7v8gha_Of_3Bu8KlwNg"
-              alt=""
-              width="100"
-              height="100">
-          <p>Không có dữ liệu</p>
-        </div>
-      </td>
-    </tr>
+    <div v-if="bodyData.length === 0"></div>
+    <tbody v-if="bodyData.length === 0">
+    <div class="flex flex-direction-column justify-content-center align-item-center" style="position: fixed; left: 50%">
+      <img
+          src="https://actappg1.misacdn.net/img/bg_report_nodata.76e50bd8.svg?fbclid=IwAR2aBsYyuZjArO35Z-1bXfHHckdaShr8Yk5mxIoM7v8gha_Of_3Bu8KlwNg"
+          alt=""
+          width="100"
+          height="100">
+      <p>Không có dữ liệu</p>
+    </div>
     </tbody>
+    <tfoot v-if="showFooter">
+    <tr>
+      <th></th>
+      <th v-for="(thead, col) in headerData" :key="col" :class="{'text-align-right': thead.key === 'total_amount'}">
+        <span v-if="thead.key === 'total_amount'">{{ Intl.NumberFormat("vi-VN").format(total) }}</span>
+      </th>
+      <th></th>
+    </tr>
+    </tfoot>
   </table>
 </template>
 
@@ -112,6 +118,14 @@ export default {
     }
   },
   props: {
+    total: {
+      type: Number,
+      default: 0
+    },
+    showFooter: {
+      type: Boolean,
+      default: false
+    },
     headerData: Object,
     bodyData: Object,
     isLoading: Boolean,
